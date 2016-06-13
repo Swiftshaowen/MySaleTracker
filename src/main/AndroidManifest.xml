@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ape.saletracker">
+   <!-- android:sharedUserId="android.uid.system" todo-->
+    <!-- Application needs SMS/MMS permissions -->
+    <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.WRITE_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_MMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <application
+        android:label="@string/app_name"
+        android:debuggable="false">
+      <!--  android:persistent="true" > -->
+        <activity
+            android:name=".SaleTrackerActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            </intent-filter>
+            <!--
+            intent-filter>
+                 <action android:name="android.provider.Telephony.SECRET_CODE" />
+                 <data android:scheme="android_secret_code" android:host="2374" />
+            </intent-filter
+            -->
+        </activity>
+        <!--
+        activity android:name="com.saleTrack.SaleTrackerDialogActivity"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Dialog">
+            
+        </activity
+        -->
+        <receiver android:name="com.ape.saletracker.SaleTrackerSecretCode" >
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SECRET_CODE" />
+
+                <data
+                    android:host="2374"
+                    android:scheme="android_secret_code" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.ape.saletracker.SaleTrackerService" >
+        </service>
+
+        <receiver android:name="com.ape.saletracker.SaleTrackerBootReceiver" >
+            <intent-filter android:priority="100" >
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="com.ape.saletracker.WIKOSTSScreen"
+            android:excludeFromRecents="true"
+            android:icon="@android:drawable/ic_dialog_info"
+            android:theme="@android:style/Theme.NoTitleBar" >
+        </activity>
+    </application>
+
+</manifest>

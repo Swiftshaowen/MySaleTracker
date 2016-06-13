@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+* Copyright (C) 2008 The Android Open Source Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+-->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Manifest configuration. -->
+    <skip />
+    <!-- Do not translate. android:sharedUserId of this application. -->
+    <string name="sharedUserId" translate="false"><xliff:g id="x"></xliff:g></string>
+    <!-- Do not translate. android:process of this application. -->
+    <string name="process" translate="false"><xliff:g id="x"></xliff:g></string>
+    
+    <!-- General -->
+    <skip />
+    <!-- Application name -->
+    <string name="app_name">STS</string>
+    <string name="btn_test">开始</string> 
+    <string name="btn_test1">复位</string>    
+   
+	
+    <string name="dialog_title">Information</string>
+    <string name="dialog_message">text</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>    
+	<string name="maxtime">开机多长时间启动（分钟）：</string>
+    <string name="testtime">错误请求的间隔时间(分钟，最小值为1)：</string>
+    <string name="save">保存</string>
+    <string name="clear">清除销售追踪最终发送结果</string>
+    <string name="day_set_text">当天发送三次失败后第二天发送的间隔时间（分）</string>
+	<string name="version">版本号:v2.0</string>
+	<string name="dialog_title_promp">Registration</string>
+	<string name="dialog_message_promp">Press Continue to register your phone with us for warranty services, updates and more.\n *Standard SMS charges applicable.</string>
+  	<string name="dialog_continue">Continue</string>
+  	<string name="notify">弹出框是否弹出</string>
+  	<string name="dialog_pop_title">Warning</string>
+  	<string name="dialog_pop_contact">Press Yes to register your handset to Wiko.</string>
+  	<string name="dialog_ok">OK</string>
+  	<string name="wiko_sts_title">WIKO:</string>
+ 	<string name="wiko_sts_text1">Blahopřejeme Vám k zakoupení telefonu WIKO!</string>
+    <string name="wiko_sts_text2">Společnost WIKO Vám zajistí technickou asistenční službu přizpůsobenou Vašim konkrétním potřebám, v reálném čase, prostřednictvím Vašeho přístroje.</string>	
+  	<string name="wiko_sts_text3">Registrace Vašeho telefonu nám umožní zasílat Vám informace o dostupných aktualizacích a vylepšeních pro Váš přístroj. *</string>
+ 	<string name="wiko_sts_text4">*Potvrzením registrace svého telefonu u společnosti WIKO potvrzujete, že jste si přečetli informace o udělení souhlasu s použitím údajů, a že jste jim porozuměli. Tyto informace jsou k dispozici v uživatelské příručce dodané spolu s telefonem a na našich internetových stránkách wikomobile.com.</string>
+	
+</resources>

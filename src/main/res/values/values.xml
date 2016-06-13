@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+     <bool name="is_open_function">true</bool>
+     <bool name="dialog_notify">false</bool>
+
+</resources>

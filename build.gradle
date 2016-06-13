@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
+
+    defaultConfig {
+        applicationId "com.ape.saletracker"
+        minSdkVersion 19
+        targetSdkVersion 23
+        versionCode 9008156
+        versionName "6.0.00.11"
+        //output apk name : ApeSaleTracker_6.0.0.02.apk
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    allprojects {
+        repositories {
+            jcenter()
+            maven {
+                url "http://192.168.33.7:8081/nexus/content/repositories/tinno"
+            }
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.1.0'
+    compile 'com.android.support:design:23.1.0'
+    compile 'com.myos.staticlibs:android-common-v6.0:0.0.2@aar'
+    compile 'com.myos.staticlibs:myosutils-v1.0:0.0.3'
+}
