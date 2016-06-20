@@ -8,8 +8,8 @@ android {
         applicationId "com.ape.saletracker"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 9008156
-        versionName "6.0.00.11"
+        versionCode 9008157
+        versionName "6.0.00.12"
         //output apk name : ApeSaleTracker_6.0.0.02.apk
     }
     buildTypes {

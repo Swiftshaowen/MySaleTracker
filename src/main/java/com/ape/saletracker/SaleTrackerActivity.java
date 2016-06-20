@@ -44,6 +44,10 @@ public class SaleTrackerActivity extends Activity {
 
 	private static Context mContext;
 
+	private int DEFAULT_START_TIME = Contant.START_TIME;
+	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
+	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_NET;
+
 	private static final String[] mStrings = {
         "sms", "net", "net and sms"
     };
@@ -65,6 +69,8 @@ public class SaleTrackerActivity extends Activity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		pickTimeConfigs();
 
 		pre = getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE);
 		ed = pre.edit();
@@ -127,13 +133,13 @@ public class SaleTrackerActivity extends Activity {
 
 		if(mSwitchWhole.isChecked() == false)
 		{
-			mSpinner.setSelection(1);
+			mSpinner.setSelection(DEFAULT_SEND_TYPE);
 			mSpinner.setEnabled(false);
 		}
 		else
 		{
 			mSpinner.setEnabled(true);
-			mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, SaleTrackerService.mDefaultSendType));
+			mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
 		}
 		  
 		TextView showVersionTv = (TextView)findViewById(R.id.tvShowVersion);
@@ -169,6 +175,10 @@ public class SaleTrackerActivity extends Activity {
 					stciSP.write_secro(0x00);
 					stciSP.writeConfigForTmeWapAddr(false);
 				}
+				ed.putInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME); //mOpenTime.getText().toString());
+				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
+				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
+				ed.commit();
 				getStatus();
 				showToast("Clear successful" );
 			}
@@ -198,9 +208,9 @@ public class SaleTrackerActivity extends Activity {
 		super.onResume();
 		getStatus();
 		mOpenTime.setText(""+pre.getInt(Contant.KEY_OPEN_TIME,
-				Contant.START_TIME));
+				DEFAULT_START_TIME));
 		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
-				Contant.SPACE_TIME));
+				DEFAULT_SPACE_TIME));
 		mDayTime.setText("" + pre.getInt(Contant.KEY_DAY_TIME,
 				Contant.DAY_TIME));
 	}
@@ -248,7 +258,7 @@ public class SaleTrackerActivity extends Activity {
 			iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 1);
 			strTmp = "SendType(from the Switch control) : ";
 		}else {
-			iSendTypeTmp = SaleTrackerService.mDefaultSendType;
+			iSendTypeTmp = DEFAULT_SEND_TYPE;
 			strTmp = "SendType : ";
 		}
 			
@@ -288,5 +298,24 @@ public class SaleTrackerActivity extends Activity {
 			getStatus();
 		}
 	};
+
+	private void pickTimeConfigs(){
+		Log.d(TAG, CLASS_NAME+"pickTimeConfigs: ");
+		String projectName = SystemProperties.get("ro.project", "trunk");
+		SaleTrackerConfigs config = SaleTrackerBootReceiver.map.get(projectName);
+		if(config != null){
+			DEFAULT_SEND_TYPE = Integer.parseInt(config._send_type);
+			DEFAULT_START_TIME = Integer.parseInt(config._start_time);
+			DEFAULT_SPACE_TIME =Integer.parseInt(config._space_time);
+
+			Log.w(TAG, CLASS_NAME+" pickCountryConfigs: "
+					+ "\n   DEFAULT_SEND_TYPE =" + DEFAULT_SEND_TYPE
+					+ "\n   DEFAULT_START_TIME ="+DEFAULT_START_TIME
+					+ "\n   DEFAULT_SPACE_TIME =" +DEFAULT_SPACE_TIME
+ 			);
+		}else{
+			Log.d(TAG,CLASS_NAME+" pickTimeConfigs: config doesn't exist");
+		}
+	}
 }
 

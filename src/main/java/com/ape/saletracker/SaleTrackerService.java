@@ -41,19 +41,17 @@ public class SaleTrackerService extends Service {
 	private static final String TAG = "SaleTracker";
 	private static final String CLASS_NAME = "SaleTrackerService---->";
 
-    private static final String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCY4gRmZHQimOWRr99Yi64jGDGMJSa7Awx05J9gpJuQz9tZPrP6QCWFJNpBxBxS_UMg-36FjFl_l8qLBWl-q7pVlyc4qdxq4HGQKJfdBm8aOFQ3Ekaylm1p2s5YKxvYTHDydKG72EXDdvbea8ZvXA1rKP-MpOWKA7XmkLpChQqrsQIDAQAB";
-
     private static final String DEFAULT_VALUE = "defaultSet";
-    private static String mHosturl = "http://eservice.tinno.com/eservice/stsReport?reptype=report";
+	private static final String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCY4gRmZHQimOWRr99Yi64jGDGMJSa7Awx05J9gpJuQz9tZPrP6QCWFJNpBxBxS_UMg-36FjFl_l8qLBWl-q7pVlyc4qdxq4HGQKJfdBm8aOFQ3Ekaylm1p2s5YKxvYTHDydKG72EXDdvbea8ZvXA1rKP-MpOWKA7XmkLpChQqrsQIDAQAB";
+	private static String mHosturl = "http://eservice.tinno.com/eservice/stsReport?reptype=report";
     private static String mTmeHosturl = "http://eservice.tinno.com/eservice/stsReport?reptype=report";
     private static String mClientNo = "0000000001";
-    private static String NUM_SMS = "18565856119";	//  15920026432; 18565856119
+    private static String NUM_SMS = "18565857256";	//  15920026432; 18565856119
 
 	private static Context mContext;
 	private String url;
 
 	public static final int STS_CONFIG_TYPE = Contant.STS_SP;
-
 	private static int mStartTimeFromXML = Contant.START_TIME;
 	private static int mSpaceTimeFromXML = Contant.SPACE_TIME;
 
@@ -77,11 +75,11 @@ public class SaleTrackerService extends Service {
 	private String mStrCountry = DEFAULT_VALUE;
 	private String mStrModel = DEFAULT_VALUE;
 
-	private SaleTrackerConfigSP mStciSP = new SaleTrackerConfigSP();
+	private static SaleTrackerConfigSP mStciSP = new SaleTrackerConfigSP();
 	private final BroadcastReceiver mSaleTrackerReceiver = new SaleTrackerReceiver();
 	private final BroadcastReceiver mStsAirplanReceiver = new StsAirplanReceiver();
 
-	private static TelephonyManager mTm = TelephonyManager.getDefault();;
+	private static TelephonyManager mTm = TelephonyManager.getDefault();
 
 	@Override
 	public void onCreate() {
@@ -90,17 +88,18 @@ public class SaleTrackerService extends Service {
 	}
 
 	private void init() {
-		Log.d(TAG, CLASS_NAME+"init()   start");
+		Log.d(TAG, CLASS_NAME+"init() start");
 		mContext = getApplicationContext();
 		mStciSP.init(mContext);
+
 		initConfig();
 
 		if (null == mTm) {
-			Log.d(TAG, CLASS_NAME+"init()   ********error******** TelephonyManager.getDefault() = null ********error********");
+			Log.d(TAG, CLASS_NAME+"init() ********error******** TelephonyManager.getDefault() = null ********error********");
 			return;
 		}
 
-		readSendParamFromXml();
+		pickCountryConfigs();
 
 		registerReceiver(mStsAirplanReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
 		if(!airplaneModeOn)
@@ -128,7 +127,7 @@ public class SaleTrackerService extends Service {
 		}
 
 		String type = intent.getStringExtra(Contant.SEND_TO);
-		Log.d(TAG, CLASS_NAME+"onStart()   this content sendto =" + type);
+		Log.d(TAG, CLASS_NAME+"onStart() this content sendto =" + type);
 		if(Contant.SEND_TO_TME.equals(type)){
 			mDefaultSendType = Contant.MSG_SEND_BY_NET;
 			mDefaultSendTypeTmp = Contant.MSG_SEND_BY_NET;
@@ -137,12 +136,13 @@ public class SaleTrackerService extends Service {
 
 		super.onStart(intent, startId);
 	}
+
 	@Override
 	public void onDestroy() {
-		airplaneModeOn = false;
-
 		super.onDestroy();
 		Log.e(TAG, CLASS_NAME+"onDestroy() unregisterReceiver");
+
+		airplaneModeOn = false;
         try {
             unregisterReceiver(mSaleTrackerReceiver);
         } catch (Exception e) {
@@ -164,7 +164,6 @@ public class SaleTrackerService extends Service {
 		am.cancel(alarmIntent);
 	}
 
-
 	private class StsAirplanReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -180,8 +179,7 @@ public class SaleTrackerService extends Service {
 						SaleTrackerService.this
 								.unregisterReceiver(mSaleTrackerReceiver);
 					} catch (IllegalArgumentException e) {
-						android.util.Log
-								.e(TAG, CLASS_NAME+"StsAirplanReceiver()   registerReceiverSafe(), FAIL!");
+						android.util.Log.e(TAG, CLASS_NAME+"StsAirplanReceiver()   registerReceiverSafe(), FAIL!");
 					}
 					// guchunhua,DATE20150720,modify for FADALFRA-75,END
 				} else {
@@ -210,6 +208,8 @@ public class SaleTrackerService extends Service {
 			if (intent.getAction().equals(Contant.STS_REFRESH)) {
 				long usedtime = SystemClock.elapsedRealtime() / 1000; //
 				long sPassedMinute = usedtime / 60;
+				Log.d(TAG,
+						CLASS_NAME+"SaleTrackerReceiver()  usedtime = "+usedtime);
 				long sPassedHour;
 
 				if (mIsSendSuccess
@@ -217,7 +217,7 @@ public class SaleTrackerService extends Service {
 						+ Contant.MAX_SEND_COUNT_BY_SMS - 1) * 24))
 						|| (mDefaultSendType != Contant.MSG_SEND_BY_SMS && mMsgSendNum > Contant.MAX_SEND_CONUT_BY_NET)) {
 					Log.d(TAG,
-							"SaleTrackerReceiver()  The message is send success or the maximum sended number, stop SaleTrackerService");
+							CLASS_NAME+"SaleTrackerReceiver()  The message is send success or the maximum sended number, stop SaleTrackerService");
 					SaleTrackerService.this.stopSelf();
 					return;
 				}
@@ -235,20 +235,20 @@ public class SaleTrackerService extends Service {
 				if (mSwitchSendType == true) {
 					mDefaultSendType = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 0);
 					Log.d(TAG,
-							"SaleTrackerReceiver()  ***only for test -----open test send type switch  :   "
+							CLASS_NAME+"SaleTrackerReceiver() ***only for test -----open test send type switch  :   "
 									+ mDefaultSendType);
 				} else {
 					mDefaultSendType = mDefaultSendTypeTmp;
 				}
 
-				sPassedMinute += mStartTimeFromXML - mStartTime;
-				sPassedHour = sPassedMinute / 60;
-				// end
-				Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver()   sPassedMinute= " + sPassedMinute + ",sPassedHour= " + sPassedHour
-						+ ",mCurrHour= " + mCurrHour + ",mCurrMinute= "
-						+ mCurrMinute+", mStartTime = "+mStartTime+"; mSpaceTime = "+mSpaceTime);
+//				sPassedMinute += mStartTimeFromXML - mStartTime;
+//				sPassedHour = sPassedMinute / 60;
+//				// end
+//				Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver()   sPassedMinute= " + sPassedMinute + ",sPassedHour= " + sPassedHour
+//						+ ",mCurrHour= " + mCurrHour + ",mCurrMinute= "
+//						+ mCurrMinute+", mStartTime = "+mStartTime+"; mSpaceTime = "+mSpaceTime);
 
-				if (sPassedMinute > (mCurrMinute + mSpaceTime - 1)) // test code
+				/*if (sPassedMinute > (mCurrMinute + mSpaceTime - 1)) // test code
 				{
 					mIsNeedSend = ((sPassedMinute >= mStartTimeFromXML) || (mMsgSendNum >0)) ? true : false;
 					if (0 == (mStartTime % mSpaceTime))//yu shu
@@ -260,7 +260,8 @@ public class SaleTrackerService extends Service {
 							+ "  mCurrMinute: " + mCurrMinute);
 				} else {
 					mIsNeedSend = false;
-				}
+				}*/
+				mIsNeedSend = true;
 
 				if (mIsNeedSend) {
 					int MsgSendMode = -1;
@@ -285,8 +286,7 @@ public class SaleTrackerService extends Service {
 							break;
 
 						case Contant.MSG_SEND_BY_NET_AND_SMS:
-							if ((mMsgSendNum > 0)
-									&& ((mMsgSendNum / 24) < readConfigSms()
+							if (((mMsgSendNum / 24) < readConfigSms()
 									+ Contant.MAX_SEND_COUNT_BY_SMS)
 									&& ((mMsgSendNum % 24) == 0)){
 								Log.d(TAG,
@@ -307,6 +307,7 @@ public class SaleTrackerService extends Service {
 
 					writeConfigDay(++mMsgSendNum);
 
+					Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver() MsgSendMode = "+MsgSendMode);
 					if (MsgSendMode > 0) {
 						Message m = new Message();
 						m.what = MsgSendMode;
@@ -321,7 +322,7 @@ public class SaleTrackerService extends Service {
 				if ("TME".equals(type)) {
 					switch (getResultCode()) {
 						case Activity.RESULT_OK:
-							Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver()   SMS is send OK ");
+							Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver() SMS is send OK ");
 							writeConfig(true);
 							//add send content to tme wap address
 							mDefaultSendType = Contant.MSG_SEND_BY_NET;
@@ -330,15 +331,11 @@ public class SaleTrackerService extends Service {
 
 							if(mSwitchSendType)//cancel switch checkbox test , will send by net
 							{
-								SharedPreferences.Editor ed ;
-								SharedPreferences pre = getSharedPreferences(Contant.STSDATA_CONFIG,
-										MODE_PRIVATE);
-								ed = pre.edit();
-								ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
-								ed.commit();
+								getSharedPreferences(Contant.STSDATA_CONFIG,MODE_PRIVATE).edit()
+										.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false).commit();
 								mSwitchSendType=false;
 
-								Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver()  ***only for test -----open test send type switch  :   "
+								Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver() ***only for test -----open test send type switch  :   "
 										+ mDefaultSendType);
 							}
 
@@ -346,7 +343,7 @@ public class SaleTrackerService extends Service {
 							break;
 
 						default:
-							Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver()   SMS is send error ResultCode=" + getResultCode());
+							Log.d(TAG, CLASS_NAME+"SaleTrackerReceiver() SMS is send error ResultCode=" + getResultCode());
 							break;
 
 					}
@@ -713,107 +710,10 @@ public class SaleTrackerService extends Service {
 
 	/********************************** read config from xml end ************************************/
 
-	private void readSendParamFromXml(){
-
-		// weijie.wang created.  5/13/16 start
-		/*String strCountryName = SystemProperties.get("ro.project", "trunk");
-		Log.w(TAG, CLASS_NAME+" readSendParamFromXml() strCountryName = "+strCountryName);
-		String[] attArray = getResources().getStringArray(
-				getResources().getIdentifier(strCountryName,"array",getPackageName()));
-
-		if(attArray != null){
-			mClientNo = attArray[0];
-			mDefaultSendType = Integer.parseInt(attArray[1]);
-			mIsNeedNoticePop = Boolean.parseBoolean(attArray[2]);
-			mHosturl = attArray[3];
-			mStartTimeFromXML = Integer.parseInt(attArray[4]);
-			mSpaceTimeFromXML = Integer.parseInt(attArray[5]);
-			mStrCountry = attArray[6];
-			mStrModel = attArray[7];
-			mDefaultSendTypeTmp = mDefaultSendType;
-
-			Log.w(TAG, CLASS_NAME+" readSendParamFromXml()    "
-					+ "\n   mClientNo =" + mClientNo
-					+ "\n   mDefaultSendType =" + mDefaultSendType
-					+ "\n   mIsNeedNoticePop =" + mIsNeedNoticePop
-					+ "\n   mHosturl ="	+ mHosturl
-					+ "\n   mStartTimeFromXML ="+mStartTimeFromXML
-					+ "\n   mSpaceTimeFromXML =" +mSpaceTimeFromXML
-					+ "\n   mStrPhoneNo =" + mStrPhoneNo
-					+ "\n   mStrModel =" + mStrModel
-					+ "\n   mStrCountry =" +mStrCountry );
-		}else{
-			Log.w(TAG, CLASS_NAME+" readSendParamFromXml()  attArray is NULL ");
-		}*/
-		// weijie.wang created.  5/13/16 end
-		Map<String, SaleTrackerConfigs> map = new HashMap<String, SaleTrackerConfigs>();
-		String path = Environment.getExternalStorageDirectory().toString();
-		String fileName = "/system/etc/ApeSaleTrackerConfig.xml";
-
+	private void pickCountryConfigs(){
+		Log.d(TAG, CLASS_NAME+"pickCountryConfigs: ");
 		String projectName = SystemProperties.get("ro.project", "trunk");
-		Log.w(TAG, CLASS_NAME+" readSendParamFromXml() projectName = "+projectName
-			+"; config file = "+fileName);
-		String countryName = null;
-		try{
-			File xmlFlie = new File(fileName);
-			InputStream inputStream = new FileInputStream(xmlFlie);
-			XmlPullParser parser = Xml.newPullParser();
-			parser.setInput(inputStream, "UTF-8");
-			int eventCode = parser.getEventType();// 事件类型
-			SaleTrackerConfigs config = null;
-			while (eventCode != XmlPullParser.END_DOCUMENT) {
-				switch (eventCode) {
-					case XmlPullParser.START_DOCUMENT:// 开始文档事件
-						break;
-					case XmlPullParser.START_TAG:// 元素开始标志
-						if ("SaleTracker".equals(parser.getName())) {
-							config = new SaleTrackerConfigs();
-						} else if (config != null) {
-							if ("name".equals(parser.getName())) {
-								config._name = parser.nextText();
-								countryName = config._name;
-							} else if ("client_no".equals(parser.getName())) {
-								config._client_no = parser.nextText();
-							} else if ("send_type".equals(parser.getName())) {
-								config._send_type = parser.nextText();
-							} else if ("notice".equals(parser.getName())) {
-								config._notice = parser.nextText();
-							} else if ("host_url".equals(parser.getName())) {
-								config._host_url = parser.nextText();
-							} else if ("start_time".equals(parser.getName())) {
-								config._start_time = parser.nextText();
-							} else if ("space_time".equals(parser.getName())) {
-								config._space_time = parser.nextText();
-							} else if ("country_type".equals(parser.getName())) {
-								config._country_type = parser.nextText();
-							} else if ("model_type".equals(parser.getName())) {
-								config._model_type = parser.nextText();
-							} else if ("phone_no".equals(parser.getName())) {
-								config._phone_no = parser.nextText();
-							}
-						}
-						break;
-					case XmlPullParser.END_TAG://元素结束标志
-						if ("SaleTracker".equals(parser.getName()) && config != null) {
-							map.put(countryName,config);
-							config = null;
-						}
-						break;
-				}
-				eventCode = parser.next();
-			}
-		}catch (FileNotFoundException e){
-			Log.d(TAG,CLASS_NAME+" readSendParamFromXml(): FileNotFoundException "+fileName);
-			e.printStackTrace();
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-
-		pickCountryConfigs(map, projectName);
-	}
-
-	private void pickCountryConfigs(Map<String, SaleTrackerConfigs> _map, String _projectName){
-		SaleTrackerConfigs config = _map.get(_projectName);
+		SaleTrackerConfigs config = SaleTrackerBootReceiver.map.get(projectName);
 		if(config != null){
 			mClientNo = config._client_no;
 			mDefaultSendType = Integer.parseInt(config._send_type);
@@ -858,7 +758,6 @@ public class SaleTrackerService extends Service {
 	}
 
 	private int readConfigSms() {
-        Log.d(TAG, CLASS_NAME+"readConfigSms: ");
 		int data = 0;
 		int temp_data = 0;
 		if(Contant.STS_SP == STS_CONFIG_TYPE)
@@ -867,6 +766,7 @@ public class SaleTrackerService extends Service {
 		}
 		temp_data = data >> 24;
 		temp_data = temp_data & 0x000000ff;
+		Log.d(TAG, CLASS_NAME+"readConfigSms: data = "+temp_data);
 		return temp_data;
 	}
 
