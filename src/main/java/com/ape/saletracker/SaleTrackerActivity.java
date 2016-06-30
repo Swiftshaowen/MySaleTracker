@@ -131,7 +131,7 @@ public class SaleTrackerActivity extends Activity {
 			}
 		});
 
-		if(mSwitchWhole.isChecked() == false)
+		/*if(mSwitchWhole.isChecked() == false)
 		{
 			mSpinner.setSelection(DEFAULT_SEND_TYPE);
 			mSpinner.setEnabled(false);
@@ -140,7 +140,9 @@ public class SaleTrackerActivity extends Activity {
 		{
 			mSpinner.setEnabled(true);
 			mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
-		}
+		}*/
+		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
+		mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
 		  
 		TextView showVersionTv = (TextView)findViewById(R.id.tvShowVersion);
 		showVersionTv.setText(mVersion);
@@ -255,12 +257,13 @@ public class SaleTrackerActivity extends Activity {
 		}
 
 		if(mSwitchWhole.isChecked()){
-			iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 1);
+//			iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 1);
 			strTmp = "SendType(from the Switch control) : ";
 		}else {
-			iSendTypeTmp = DEFAULT_SEND_TYPE;
+//			iSendTypeTmp = DEFAULT_SEND_TYPE;
 			strTmp = "SendType : ";
 		}
+		iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
 			
 		if(iSendTypeTmp == 0){
 			sendTypeTextView.setText(strTmp + " sms");
@@ -301,8 +304,11 @@ public class SaleTrackerActivity extends Activity {
 
 	private void pickTimeConfigs(){
 		Log.d(TAG, CLASS_NAME+"pickTimeConfigs: ");
+
+		SaleTrackerUti.readSendParamFromXml();
+
 		String projectName = SystemProperties.get("ro.project", "trunk");
-		SaleTrackerConfigs config = SaleTrackerBootReceiver.map.get(projectName);
+		SaleTrackerConfigs config = SaleTrackerUti.map.get(projectName);
 		if(config != null){
 			DEFAULT_SEND_TYPE = Integer.parseInt(config._send_type);
 			DEFAULT_START_TIME = Integer.parseInt(config._start_time);

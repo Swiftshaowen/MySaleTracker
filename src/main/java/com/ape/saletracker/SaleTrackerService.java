@@ -712,8 +712,11 @@ public class SaleTrackerService extends Service {
 
 	private void pickCountryConfigs(){
 		Log.d(TAG, CLASS_NAME+"pickCountryConfigs: ");
+
+		SaleTrackerUti.readSendParamFromXml();
+
 		String projectName = SystemProperties.get("ro.project", "trunk");
-		SaleTrackerConfigs config = SaleTrackerBootReceiver.map.get(projectName);
+		SaleTrackerConfigs config = SaleTrackerUti.map.get(projectName);
 		if(config != null){
 			mClientNo = config._client_no;
 			mDefaultSendType = Integer.parseInt(config._send_type);

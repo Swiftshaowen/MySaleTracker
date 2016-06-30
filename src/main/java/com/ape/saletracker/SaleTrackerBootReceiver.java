@@ -31,7 +31,7 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 	private int mStartTime;
 	private int DEFAULT_START_TIME = Contant.START_TIME;
 
-	public static Map<String, SaleTrackerConfigs> map = new HashMap<String, SaleTrackerConfigs>();
+//	public static Map<String, SaleTrackerConfigs> map = new HashMap<String, SaleTrackerConfigs>();
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -43,12 +43,12 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 				return;
 			}
 
-			readSendParamFromXml();
+			SaleTrackerUti.readSendParamFromXml();
 
 			String projectName = SystemProperties.get("ro.project", "trunk");
-			if(map.get(projectName) != null){
-				DEFAULT_SPACE_TIME = Integer.parseInt(map.get(projectName)._space_time);
-				DEFAULT_START_TIME = Integer.parseInt(map.get(projectName)._start_time);
+			if(SaleTrackerUti.map.get(projectName) != null){
+				DEFAULT_SPACE_TIME = Integer.parseInt(SaleTrackerUti.map.get(projectName)._space_time);
+				DEFAULT_START_TIME = Integer.parseInt(SaleTrackerUti.map.get(projectName)._start_time);
 				Log.d(TAG, CLASS_NAME+"onReceive: DEFAULT_SPACE_TIME = "+DEFAULT_SPACE_TIME
 					+"; DEFAULT_START_TIME = "+DEFAULT_START_TIME);
 			}
@@ -104,11 +104,11 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
         am.cancel(alarmIntent);
         am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, mStartTime * 60*1000 , mSpaceTime * 60*1000 , alarmIntent);
     }
-
+/*
 	private void readSendParamFromXml(){
 
 		// weijie.wang created.  5/13/16 start
-		/*String strCountryName = SystemProperties.get("ro.project", "trunk");
+		*//*String strCountryName = SystemProperties.get("ro.project", "trunk");
 		Log.w(TAG, CLASS_NAME+" readSendParamFromXml() strCountryName = "+strCountryName);
 		String[] attArray = getResources().getStringArray(
 				getResources().getIdentifier(strCountryName,"array",getPackageName()));
@@ -136,7 +136,7 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 					+ "\n   mStrCountry =" +mStrCountry );
 		}else{
 			Log.w(TAG, CLASS_NAME+" readSendParamFromXml()  attArray is NULL ");
-		}*/
+		}*//*
 		// weijie.wang created.  5/13/16 end
 		String path = Environment.getExternalStorageDirectory().toString();
 		String fileName = "/system/etc/ApeSaleTrackerConfig.xml";
@@ -199,5 +199,5 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 		}catch (Exception e){
 			e.printStackTrace();
 		}
-	}
+	}*/
 }
