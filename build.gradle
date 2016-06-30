@@ -8,8 +8,8 @@ android {
         applicationId "com.ape.saletracker"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 9008157
-        versionName "6.0.00.12"
+        versionCode 9008158
+        versionName "6.0.00.13"
         //output apk name : ApeSaleTracker_6.0.0.02.apk
     }
     buildTypes {
@@ -35,5 +35,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'com.myos.staticlibs:android-common-v6.0:0.0.2@aar'
-    compile 'com.myos.staticlibs:myosutils-v1.0:0.0.3'
+    compile 'com.myos.staticlibs:myosutils-v1.0:0.0.15'
 }
