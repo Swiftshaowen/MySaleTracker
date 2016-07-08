@@ -286,8 +286,8 @@ public class SaleTrackerService extends Service {
 							break;
 
 						case Contant.MSG_SEND_BY_NET_AND_SMS:
-							if (((mMsgSendNum / 24) < readConfigSms()
-									+ Contant.MAX_SEND_COUNT_BY_SMS)
+							if ((mMsgSendNum > 0)
+									&& ((mMsgSendNum / 24) < readConfigSms() + Contant.MAX_SEND_COUNT_BY_SMS)
 									&& ((mMsgSendNum % 24) == 0)){
 								Log.d(TAG,
 										"SaleTrackerReceiver() send type by NET_AND_SMS  mMsgSendNum = "
@@ -713,7 +713,7 @@ public class SaleTrackerService extends Service {
 	private void pickCountryConfigs(){
 		Log.d(TAG, CLASS_NAME+"pickCountryConfigs: ");
 
-		SaleTrackerUti.readSendParamFromXml();
+		SaleTrackerUti.readSendParamFromXml(getApplicationContext());
 
 		String projectName = SystemProperties.get("ro.project", "trunk");
 		SaleTrackerConfigs config = SaleTrackerUti.map.get(projectName);

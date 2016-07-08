@@ -43,7 +43,7 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 				return;
 			}
 
-			SaleTrackerUti.readSendParamFromXml();
+			SaleTrackerUti.readSendParamFromXml(context);
 
 			String projectName = SystemProperties.get("ro.project", "trunk");
 			if(SaleTrackerUti.map.get(projectName) != null){

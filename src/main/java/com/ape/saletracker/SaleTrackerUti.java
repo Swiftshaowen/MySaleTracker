@@ -23,10 +23,9 @@ public class SaleTrackerUti {
     private static final String TAG = "SaleTracker";
     private static final String CLASS_NAME = "SaleTrackerUti---->";
 
-    private static Context mContext;
     public static Map<String, SaleTrackerConfigs> map = new HashMap<String, SaleTrackerConfigs>();
 
-    public static void readSendParamFromXml(){
+    public static void readSendParamFromXml(Context context){
 
         // weijie.wang created.  5/13/16 start
 		/*String strCountryName = SystemProperties.get("ro.project", "trunk");
@@ -60,7 +59,6 @@ public class SaleTrackerUti {
 		}*/
         // weijie.wang created.  5/13/16 end
 
-        Log.w(TAG, CLASS_NAME+" readSendParamFromXml() map = "+map);
         if(!map.isEmpty()){
             return;
         }
@@ -82,12 +80,10 @@ public class SaleTrackerUti {
             if(xmlFileExter.exists()){
                 inputStream = new FileInputStream(xmlFileExter);
             }else{
-                Log.w(TAG, CLASS_NAME+" readSendParamFromXml() getAssets()");
-                inputStream = mContext.getResources().getAssets().open("ApeSaleTrackerConfig.xml");
-                Log.w(TAG, CLASS_NAME+" readSendParamFromXml() getAssets() inputStream = "+inputStream);
+//                inputStream = context.getResources().getAssets().open("ApeSaleTrackerConfig.xml");
+                inputStream = context.getResources().openRawResource(R.raw.ape_sale_tracker_config);
             }
 
-            Log.w(TAG, CLASS_NAME+" readSendParamFromXml() inputStream = "+inputStream);
             XmlPullParser parser = Xml.newPullParser();
             parser.setInput(inputStream, "UTF-8");
             int eventCode = parser.getEventType();// 事件类型
@@ -138,9 +134,10 @@ public class SaleTrackerUti {
                 inputStream.close();
             }
         }catch (FileNotFoundException e){
-            Log.d(TAG,CLASS_NAME+" readSendParamFromXml(): FileNotFoundException "+fileName);
+            Log.d(TAG,CLASS_NAME+" readSendParamFromXml(): FileNotFoundException ");
             e.printStackTrace();
         }catch (Exception e){
+            Log.d(TAG,CLASS_NAME+" readSendParamFromXml(): Exception");
             e.printStackTrace();
         }
     }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ape.saletracker">
-   <!-- android:sharedUserId="android.uid.system" todo-->
+    package="com.ape.saletracker"
+    android:sharedUserId="android.uid.system"
+    >
+   <!--android:sharedUserId="android.uid.system"-->
     <!-- Application needs SMS/MMS permissions -->
     <uses-sdk android:minSdkVersion="19" android:targetSdkVersion="23" />
     <uses-permission android:name="android.permission.READ_SMS"/>

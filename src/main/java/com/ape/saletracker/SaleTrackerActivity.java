@@ -177,6 +177,7 @@ public class SaleTrackerActivity extends Activity {
 					stciSP.write_secro(0x00);
 					stciSP.writeConfigForTmeWapAddr(false);
 				}
+				mSwitchWhole.setChecked(false);
 				ed.putInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME); //mOpenTime.getText().toString());
 				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
 				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
@@ -305,7 +306,7 @@ public class SaleTrackerActivity extends Activity {
 	private void pickTimeConfigs(){
 		Log.d(TAG, CLASS_NAME+"pickTimeConfigs: ");
 
-		SaleTrackerUti.readSendParamFromXml();
+		SaleTrackerUti.readSendParamFromXml(getApplicationContext());
 
 		String projectName = SystemProperties.get("ro.project", "trunk");
 		SaleTrackerConfigs config = SaleTrackerUti.map.get(projectName);
