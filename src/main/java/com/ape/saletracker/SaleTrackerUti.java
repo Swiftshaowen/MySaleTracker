@@ -3,6 +3,7 @@ package com.ape.saletracker;
 import android.content.Context;
 import android.os.Environment;
 import android.os.SystemProperties;
+import android.util.Config;
 import android.util.Log;
 import android.util.Xml;
 
@@ -13,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -128,6 +130,22 @@ public class SaleTrackerUti {
                         break;
                 }
                 eventCode = parser.next();
+            }
+
+            Iterator entries = map.entrySet().iterator();
+
+            while (entries.hasNext()) {
+
+                Map.Entry entry = (Map.Entry) entries.next();
+
+                String key = (String)entry.getKey();
+
+                SaleTrackerConfigs value = (SaleTrackerConfigs)entry.getValue();
+
+                Log.d(TAG, CLASS_NAME+" readSendParamFromXml(): key = "+key
+                    +"; value_name = "+value._name+"; value_client_no = "+value._client_no);
+                System.out.println("Key = " + key + ", Value = " + value);
+
             }
 
             if(inputStream != null){

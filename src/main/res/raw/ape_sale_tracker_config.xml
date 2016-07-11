@@ -276,5 +276,28 @@
 		<!-- 9. phone_no --><!-- phone number for sms send type ; default is defaultSet; -->
 		<phone_no>defaultSet</phone_no>
 	</SaleTracker>
+
+	<SaleTracker id="13">
+		<!-- name -->
+		<name>wik_fr</name>
+		<!-- 1. client_no -->
+		<client_no>0000006000</client_no>
+		<!-- 2. send_type --><!-- 0  sended by sms ; 1 sended by net ; 2 sended by net and sms  -->
+		<send_type>1</send_type>
+		<!-- 3. notice --><!-- notice switch on or off  , false value is off ; true value is on -->
+		<notice>true</notice>
+		<!-- 4. host_url --><!-- sts hosturl:  http://eservice.tinno.com/eservice/stsReport?reptype=report   or  http://eservice.euwiko.com:8080/euwiko/stsReport?reptype=report -->
+		<host_url>http://eservice.euwiko.com:8080/euwiko/stsReport?reptype=report</host_url>
+		<!-- 5. start_time --><!-- start time ; default is 180 min -->
+		<start_time>180</start_time>
+		<!-- 6. space_time --><!--space time ; default is 60 min  -->
+		<space_time>60</space_time>
+		<!-- 7. country_type --><!--  This is a reserved setting, keep defaultSet,don't change -->
+		<country_type>defaultSet</country_type>
+		<!-- 8. model_type --><!-- This setting is for pk, other region keep defaultSet,don't change -->
+		<model_type>defaultSet</model_type>
+		<!-- 9. phone_no --><!-- phone number for sms send type ; default is defaultSet; -->
+		<phone_no>defaultSet</phone_no>
+	</SaleTracker>
 </resources>
  
