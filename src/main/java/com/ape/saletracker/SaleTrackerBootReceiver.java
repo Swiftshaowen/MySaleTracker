@@ -25,30 +25,32 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "SaleTracker";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
+	private static final String VERSION_NUMBER = "201607120923";
 
 	private int mSpaceTime;
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
 	private int mStartTime;
 	private int DEFAULT_START_TIME = Contant.START_TIME;
 
-//	public static Map<String, SaleTrackerConfigs> map = new HashMap<String, SaleTrackerConfigs>();
+	private static final String CONFIG_START_TIME = "start_time";
+	private static final String CONFIG_SPACE_TIME = "space_time";
+
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-			Log.d(TAG, CLASS_NAME+"onReceive: ACTION_BOOT_COMPLETED");
+			Log.d(TAG, CLASS_NAME+"onReceive: ACTION_BOOT_COMPLETED ; VERSION_NUMBER = "+VERSION_NUMBER);
 			boolean isOpen = context.getResources().getBoolean(R.bool.is_open_function);
 			if (!isOpen) {
 				Log.e(TAG, CLASS_NAME+"onReceive: saleTrack setting is close");
 				return;
 			}
 
-			SaleTrackerUti.readSendParamFromXml(context);
+			Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(context);
 
-			String projectName = SystemProperties.get("ro.project", "trunk");
-			if(SaleTrackerUti.map.get(projectName) != null){
-				DEFAULT_SPACE_TIME = Integer.parseInt(SaleTrackerUti.map.get(projectName)._space_time);
-				DEFAULT_START_TIME = Integer.parseInt(SaleTrackerUti.map.get(projectName)._start_time);
+			if(configMap != null){
+				DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
+				DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
 				Log.d(TAG, CLASS_NAME+"onReceive: DEFAULT_SPACE_TIME = "+DEFAULT_SPACE_TIME
 					+"; DEFAULT_START_TIME = "+DEFAULT_START_TIME);
 			}

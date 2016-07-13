@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources module="platform" configVersion="1.0.0.0" requirementsVersion="0.1">
+
+    <!-- 1. client_no -->
+    <feature id = "xxxxx" title="client_no" >
+        <string name="client_no" value="0000011306"></string>
+    </feature>
+
+    <!-- 2. send_type --><!-- 0  sended by sms ; 1 sended by net ; 2 sended by net and sms  -->
+    <feature id = "xxxxx" title="send_type" >
+        <string name="send_type" value="2"></string>
+    </feature>
+
+    <!-- 3. notice --><!-- notice switch on or off  , false value is off ; true value is on -->
+    <feature id = "xxxxx" title="notice" >
+        <string name="notice" value="false"></string>
+    </feature>
+
+    <!-- 4. host_url --><!-- sts hosturl:  http://eservice.tinno.com/eservice/stsReport?reptype=report   or  http://eservice.euwiko.com:8080/euwiko/stsReport?reptype=report -->
+    <feature id = "xxxxx" title="host_url" >
+        <string name="host_url" value="http://eservice.tinno.com/eservice/stsReport?reptype=report"></string>
+    </feature>
+
+    <!-- 5. start_time --><!-- start time ; default is 180 min -->
+    <feature id = "xxxxx" title="start_time" >
+        <string name="start_time" value="30"></string>
+    </feature>
+
+    <!-- 6. space_time --><!--space time ; default is 60 min  -->
+    <feature id = "xxxxx" title="space_time" >
+        <string name="space_time" value="30"></string>
+    </feature>
+</resources>
+

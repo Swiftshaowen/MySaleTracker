@@ -7,6 +7,8 @@ import android.util.Config;
 import android.util.Log;
 import android.util.Xml;
 
+import com.ape.util.ApeConfigParser;
+
 import org.xmlpull.v1.XmlPullParser;
 
 import java.io.File;
@@ -24,140 +26,65 @@ public class SaleTrackerUti {
 
     private static final String TAG = "SaleTracker";
     private static final String CLASS_NAME = "SaleTrackerUti---->";
+    public static final String FEATURE_FILE_PATRH = "/etc/apps/ApeSaleTracker/config.xml";
+    private static ApeConfigParser mApeConfigParser  = null;
 
-    public static Map<String, SaleTrackerConfigs> map = new HashMap<String, SaleTrackerConfigs>();
+    private static final String CONFIG_CLIENT_NO = "client_no";
+    private static final String CONFIG_SEND_TYPE = "send_type";
+    private static final String CONFIG_NOTICE = "notice";
+    private static final String CONFIG_HOST_URL = "host_url";
+    private static final String CONFIG_START_TIME = "start_time";
+    private static final String CONFIG_SPACE_TIME = "space_time";
 
-    public static void readSendParamFromXml(Context context){
+    private static Map<String, String> configMap = new HashMap<>();
 
-        // weijie.wang created.  5/13/16 start
-		/*String strCountryName = SystemProperties.get("ro.project", "trunk");
-		Log.w(TAG, CLASS_NAME+" readSendParamFromXml() strCountryName = "+strCountryName);
-		String[] attArray = getResources().getStringArray(
-				getResources().getIdentifier(strCountryName,"array",getPackageName()));
-
-		if(attArray != null){
-			mClientNo = attArray[0];
-			mDefaultSendType = Integer.parseInt(attArray[1]);
-			mIsNeedNoticePop = Boolean.parseBoolean(attArray[2]);
-			mHosturl = attArray[3];
-			mStartTimeFromXML = Integer.parseInt(attArray[4]);
-			mSpaceTimeFromXML = Integer.parseInt(attArray[5]);
-			mStrCountry = attArray[6];
-			mStrModel = attArray[7];
-			mDefaultSendTypeTmp = mDefaultSendType;
-
-			Log.w(TAG, CLASS_NAME+" readSendParamFromXml()    "
-					+ "\n   mClientNo =" + mClientNo
-					+ "\n   mDefaultSendType =" + mDefaultSendType
-					+ "\n   mIsNeedNoticePop =" + mIsNeedNoticePop
-					+ "\n   mHosturl ="	+ mHosturl
-					+ "\n   mStartTimeFromXML ="+mStartTimeFromXML
-					+ "\n   mSpaceTimeFromXML =" +mSpaceTimeFromXML
-					+ "\n   mStrPhoneNo =" + mStrPhoneNo
-					+ "\n   mStrModel =" + mStrModel
-					+ "\n   mStrCountry =" +mStrCountry );
-		}else{
-			Log.w(TAG, CLASS_NAME+" readSendParamFromXml()  attArray is NULL ");
-		}*/
-        // weijie.wang created.  5/13/16 end
-
-        if(!map.isEmpty()){
-            return;
-        }
-
-        String path = Environment.getExternalStorageDirectory().toString();
-        String fileName = "/system/etc/ApeSaleTrackerConfig.xml";
-
-        String projectName = SystemProperties.get("ro.project", "trunk");
-        Log.w(TAG, CLASS_NAME+" readSendParamFromXml() projectName = "+projectName
-                +"; config file = "+fileName);
-        String countryName = null;
-        try{
-            File xmlFileExter = new File(fileName);
-
-            Log.w(TAG, CLASS_NAME+" readSendParamFromXml() is external xml file exist = "+xmlFileExter.exists());
-
-            // Read parameters from external xml
-            InputStream inputStream = null;
-            if(xmlFileExter.exists()){
-                inputStream = new FileInputStream(xmlFileExter);
-            }else{
-//                inputStream = context.getResources().getAssets().open("ApeSaleTrackerConfig.xml");
-                inputStream = context.getResources().openRawResource(R.raw.ape_sale_tracker_config);
-            }
-
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(inputStream, "UTF-8");
-            int eventCode = parser.getEventType();// 事件类型
-            SaleTrackerConfigs config = null;
-            while (eventCode != XmlPullParser.END_DOCUMENT) {
-                switch (eventCode) {
-                    case XmlPullParser.START_DOCUMENT:// 开始文档事件
-                        break;
-                    case XmlPullParser.START_TAG:// 元素开始标志
-                        if ("SaleTracker".equals(parser.getName())) {
-                            config = new SaleTrackerConfigs();
-                        } else if (config != null) {
-                            if ("name".equals(parser.getName())) {
-                                config._name = parser.nextText();
-                                countryName = config._name;
-                            } else if ("client_no".equals(parser.getName())) {
-                                config._client_no = parser.nextText();
-                            } else if ("send_type".equals(parser.getName())) {
-                                config._send_type = parser.nextText();
-                            } else if ("notice".equals(parser.getName())) {
-                                config._notice = parser.nextText();
-                            } else if ("host_url".equals(parser.getName())) {
-                                config._host_url = parser.nextText();
-                            } else if ("start_time".equals(parser.getName())) {
-                                config._start_time = parser.nextText();
-                            } else if ("space_time".equals(parser.getName())) {
-                                config._space_time = parser.nextText();
-                            } else if ("country_type".equals(parser.getName())) {
-                                config._country_type = parser.nextText();
-                            } else if ("model_type".equals(parser.getName())) {
-                                config._model_type = parser.nextText();
-                            } else if ("phone_no".equals(parser.getName())) {
-                                config._phone_no = parser.nextText();
-                            }
-                        }
-                        break;
-                    case XmlPullParser.END_TAG://元素结束标志
-                        if ("SaleTracker".equals(parser.getName()) && config != null) {
-                            map.put(countryName, config);
-                            config = null;
-                        }
-                        break;
-                }
-                eventCode = parser.next();
-            }
-
-            Iterator entries = map.entrySet().iterator();
-
-            while (entries.hasNext()) {
-
-                Map.Entry entry = (Map.Entry) entries.next();
-
-                String key = (String)entry.getKey();
-
-                SaleTrackerConfigs value = (SaleTrackerConfigs)entry.getValue();
-
-                Log.d(TAG, CLASS_NAME+" readSendParamFromXml(): key = "+key
-                    +"; value_name = "+value._name+"; value_client_no = "+value._client_no);
-                System.out.println("Key = " + key + ", Value = " + value);
-
-            }
-
-            if(inputStream != null){
-                inputStream.close();
-            }
-        }catch (FileNotFoundException e){
-            Log.d(TAG,CLASS_NAME+" readSendParamFromXml(): FileNotFoundException ");
-            e.printStackTrace();
-        }catch (Exception e){
-            Log.d(TAG,CLASS_NAME+" readSendParamFromXml(): Exception");
-            e.printStackTrace();
+    private static void initFeatureConfigIfNull(Context context) {
+        if (mApeConfigParser == null) {
+            mApeConfigParser = new ApeConfigParser(context, FEATURE_FILE_PATRH);
         }
     }
+
+    public static Map<String, String> readSendParamFromXml(Context context) {
+        initFeatureConfigIfNull(context);
+
+        if(configMap != null){
+            configMap.clear();
+        }
+
+        String client_no = mApeConfigParser.getString(CONFIG_CLIENT_NO, Contant.DEFAULT_CLIENT_NO);
+        configMap.put(CONFIG_CLIENT_NO, client_no);
+
+        String send_type = mApeConfigParser.getString(CONFIG_SEND_TYPE, String.valueOf(Contant.MSG_SEND_BY_NET));
+        configMap.put(CONFIG_SEND_TYPE, send_type);
+
+        String notice = mApeConfigParser.getString(CONFIG_NOTICE, "false");
+        configMap.put(CONFIG_NOTICE, notice);
+
+        String host_url = mApeConfigParser.getString(CONFIG_HOST_URL, "http://eservice.tinno.com/eservice/stsReport?reptype=report");
+        configMap.put(CONFIG_HOST_URL, host_url);
+
+        String start_time = mApeConfigParser.getString(CONFIG_START_TIME, String.valueOf(Contant.START_TIME));
+        configMap.put(CONFIG_START_TIME, start_time);
+
+        String space_time = mApeConfigParser.getString(CONFIG_SPACE_TIME, String.valueOf(Contant.SPACE_TIME));
+        configMap.put(CONFIG_SPACE_TIME, space_time);
+
+        Log.d(TAG, CLASS_NAME+"readSendParamFromXml: "
+            +"\n client_no = "+client_no
+            +"\n send_type = "+send_type
+            +"\n notice = "+notice
+            +"\n host_url = "+host_url
+            +"\n start_time = "+start_time
+            +"\n space_time = "+space_time);
+
+        return  configMap;
+    }
+
+
+
+
+
+
+
 
 }

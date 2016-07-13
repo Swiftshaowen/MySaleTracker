@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import com.wrapper.stk.HideMethod;
 
+import java.util.Map;
+
 public class SaleTrackerActivity extends Activity {
 	
 	private static final String TAG = "SaleTracker";
@@ -47,6 +49,10 @@ public class SaleTrackerActivity extends Activity {
 	private int DEFAULT_START_TIME = Contant.START_TIME;
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
 	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_NET;
+
+	private static final String CONFIG_SEND_TYPE = "send_type";
+	private static final String CONFIG_START_TIME = "start_time";
+	private static final String CONFIG_SPACE_TIME = "space_time";
 
 	private static final String[] mStrings = {
         "sms", "net", "net and sms"
@@ -306,20 +312,17 @@ public class SaleTrackerActivity extends Activity {
 	private void pickTimeConfigs(){
 		Log.d(TAG, CLASS_NAME+"pickTimeConfigs: ");
 
-		SaleTrackerUti.readSendParamFromXml(getApplicationContext());
-
-		String projectName = SystemProperties.get("ro.project", "trunk");
-		SaleTrackerConfigs config = SaleTrackerUti.map.get(projectName);
-		if(config != null){
-			DEFAULT_SEND_TYPE = Integer.parseInt(config._send_type);
-			DEFAULT_START_TIME = Integer.parseInt(config._start_time);
-			DEFAULT_SPACE_TIME =Integer.parseInt(config._space_time);
+		Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(getApplicationContext());
+		if(configMap != null){
+			DEFAULT_SEND_TYPE = Integer.parseInt(configMap.get(CONFIG_SEND_TYPE));
+			DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
+			DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
 
 			Log.w(TAG, CLASS_NAME+" pickCountryConfigs: "
 					+ "\n   DEFAULT_SEND_TYPE =" + DEFAULT_SEND_TYPE
 					+ "\n   DEFAULT_START_TIME ="+DEFAULT_START_TIME
 					+ "\n   DEFAULT_SPACE_TIME =" +DEFAULT_SPACE_TIME
- 			);
+			);
 		}else{
 			Log.d(TAG,CLASS_NAME+" pickTimeConfigs: config doesn't exist");
 		}

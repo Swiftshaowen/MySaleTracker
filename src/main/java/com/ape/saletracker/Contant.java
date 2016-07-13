@@ -4,6 +4,7 @@ package com.ape.saletracker;
  * Created by android on 5/18/16.
  */
 public class Contant {
+    public static String DEFAULT_CLIENT_NO = "0000001000";
     public static int START_TIME = 180;
     public static int SPACE_TIME = 60;
     public static int DAY_TIME = 24*60;

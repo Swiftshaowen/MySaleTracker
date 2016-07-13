@@ -45,7 +45,7 @@ public class SaleTrackerService extends Service {
 	private static final String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCY4gRmZHQimOWRr99Yi64jGDGMJSa7Awx05J9gpJuQz9tZPrP6QCWFJNpBxBxS_UMg-36FjFl_l8qLBWl-q7pVlyc4qdxq4HGQKJfdBm8aOFQ3Ekaylm1p2s5YKxvYTHDydKG72EXDdvbea8ZvXA1rKP-MpOWKA7XmkLpChQqrsQIDAQAB";
 	private static String mHosturl = "http://eservice.tinno.com/eservice/stsReport?reptype=report";
     private static String mTmeHosturl = "http://eservice.tinno.com/eservice/stsReport?reptype=report";
-    private static String mClientNo = "0000000001";
+    private static String mClientNo = "0000001000";
     private static String NUM_SMS = "18565857256";	//  15920026432; 18565856119
 
 	private static Context mContext;
@@ -81,6 +81,12 @@ public class SaleTrackerService extends Service {
 
 	private static TelephonyManager mTm = TelephonyManager.getDefault();
 
+	private static final String CONFIG_CLIENT_NO = "client_no";
+	private static final String CONFIG_SEND_TYPE = "send_type";
+	private static final String CONFIG_NOTICE = "notice";
+	private static final String CONFIG_HOST_URL = "host_url";
+	private static final String CONFIG_START_TIME = "start_time";
+	private static final String CONFIG_SPACE_TIME = "space_time";
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -713,31 +719,25 @@ public class SaleTrackerService extends Service {
 	private void pickCountryConfigs(){
 		Log.d(TAG, CLASS_NAME+"pickCountryConfigs: ");
 
-		SaleTrackerUti.readSendParamFromXml(getApplicationContext());
-
 		String projectName = SystemProperties.get("ro.project", "trunk");
-		SaleTrackerConfigs config = SaleTrackerUti.map.get(projectName);
-		if(config != null){
-			mClientNo = config._client_no;
-			mDefaultSendType = Integer.parseInt(config._send_type);
-			mIsNeedNoticePop = Boolean.parseBoolean(config._notice);
-			mHosturl = config._host_url;
-			mStartTimeFromXML = Integer.parseInt(config._start_time);
-			mSpaceTimeFromXML = Integer.parseInt(config._space_time);
-			mStrCountry = config._country_type;
-			mStrModel = config._model_type;
+		Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(getApplicationContext());
+		if(configMap != null){
+			mClientNo = configMap.get(CONFIG_CLIENT_NO);
+			mDefaultSendType = Integer.parseInt(configMap.get(CONFIG_SEND_TYPE));
+			mIsNeedNoticePop = Boolean.parseBoolean(configMap.get(CONFIG_NOTICE));
+			mHosturl = configMap.get(CONFIG_HOST_URL);
+			mStartTimeFromXML = Integer.parseInt(configMap.get(CONFIG_START_TIME));
+			mSpaceTimeFromXML = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
 			mDefaultSendTypeTmp = mDefaultSendType;
 
-			Log.w(TAG, CLASS_NAME+" pickCountryConfigs: "
+			Log.w(TAG, CLASS_NAME+" pickCountryConfigs: projectName = "+projectName
 					+ "\n   mClientNo =" + mClientNo
 					+ "\n   mDefaultSendType =" + mDefaultSendType
 					+ "\n   mIsNeedNoticePop =" + mIsNeedNoticePop
 					+ "\n   mHosturl ="	+ mHosturl
 					+ "\n   mStartTimeFromXML ="+mStartTimeFromXML
 					+ "\n   mSpaceTimeFromXML =" +mSpaceTimeFromXML
-					+ "\n   mStrPhoneNo =" + mStrPhoneNo
-					+ "\n   mStrModel =" + mStrModel
-					+ "\n   mStrCountry =" +mStrCountry );
+					+ "\n   mStrPhoneNo =" + mStrPhoneNo );
 		}else{
 			Log.d(TAG,CLASS_NAME+" pickCountryConfigs: config doesn't exist");
 		}
