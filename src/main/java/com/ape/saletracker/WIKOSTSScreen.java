@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Button;
+import android.view.View;
 
 public class WIKOSTSScreen extends Activity {
 
 	public static final int FLAG_HOMEKEY_DISPATCHED = 0x80000000;
-	
+
+	public static final int STATUS_BAR_DISABLE_RECENT = 0x01000000;
+	public static final int STATUS_BAR_DISABLE_HOME = 0x00200000;
+	public static final int STATUS_BAR_DISABLE_BACK = 0x00400000;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -23,6 +27,16 @@ public class WIKOSTSScreen extends Activity {
             hasNavBar = true;
         }
 		Log.d("guchunhua","onCreate hasNavBar = "+ hasNavBar);
+		/*if(hasNavBar && SystemProperties.get("ro.wiko", "trunk").equals("wiko"))
+		{
+			this.getWindow().getDecorView().setSystemUiVisibility
+				(View.STATUS_BAR_DISABLE_RECENT|View.STATUS_BAR_DISABLE_HOME| View.STATUS_BAR_DISABLE_BACK);
+		}*///// TODO: 16-1-26
+		//guchunhua,DATE20150402,modify for FEAAL
+
+		this.getWindow().getDecorView().setSystemUiVisibility
+				(STATUS_BAR_DISABLE_RECENT|STATUS_BAR_DISABLE_HOME|STATUS_BAR_DISABLE_BACK);
+
 		//guchunhua,DATE20150402,modify for FEAALFRA-235,END
 		setContentView(R.layout.activity_wikostsscreen);
 		Button button_yes = (Button)findViewById(R.id.button_ok);

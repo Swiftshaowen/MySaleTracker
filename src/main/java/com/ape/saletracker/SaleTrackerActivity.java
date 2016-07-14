@@ -114,7 +114,7 @@ public class SaleTrackerActivity extends Activity {
 				 } else {
 					 mSpinner.setEnabled(true);
 				 }
-				 getStatus();
+//				 getStatus();
 			 }
 		});
 
@@ -137,16 +137,6 @@ public class SaleTrackerActivity extends Activity {
 			}
 		});
 
-		/*if(mSwitchWhole.isChecked() == false)
-		{
-			mSpinner.setSelection(DEFAULT_SEND_TYPE);
-			mSpinner.setEnabled(false);
-		}
-		else
-		{
-			mSpinner.setEnabled(true);
-			mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
-		}*/
 		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
 		mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
 		  
@@ -187,6 +177,7 @@ public class SaleTrackerActivity extends Activity {
 				ed.putInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME); //mOpenTime.getText().toString());
 				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
 				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
+				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
 				ed.commit();
 				getStatus();
 				showToast("Clear successful" );
@@ -216,12 +207,6 @@ public class SaleTrackerActivity extends Activity {
 		Log.d(TAG, CLASS_NAME+"onResume");
 		super.onResume();
 		getStatus();
-		mOpenTime.setText(""+pre.getInt(Contant.KEY_OPEN_TIME,
-				DEFAULT_START_TIME));
-		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
-				DEFAULT_SPACE_TIME));
-		mDayTime.setText("" + pre.getInt(Contant.KEY_DAY_TIME,
-				Contant.DAY_TIME));
 	}
 
 	public void getStatus(){
@@ -230,6 +215,16 @@ public class SaleTrackerActivity extends Activity {
 		TextView setResutTextView = (TextView)this.findViewById(R.id.tvShowSendResult);
 		TextView sendTypeTextView = (TextView)this.findViewById(R.id.tvShowSendType);
 		setResutTextView.setText("Send result : No"+ "    result2 : No");
+
+		// Update UI
+		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
+		mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
+		mOpenTime.setText(""+pre.getInt(Contant.KEY_OPEN_TIME,
+				DEFAULT_START_TIME));
+		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
+				DEFAULT_SPACE_TIME));
+		mDayTime.setText("" + pre.getInt(Contant.KEY_DAY_TIME,
+				Contant.DAY_TIME));
 		
 		if(Contant.STS_JNI ==SaleTrackerService.STS_CONFIG_TYPE){
 			showOpenFileTextView.setText ("Open Config File :  OK");
@@ -259,6 +254,7 @@ public class SaleTrackerActivity extends Activity {
 
 		//if first send time is ok, set mSwitchWhole unchecked
 		if((data & 0x000000ff) == 0x01){
+			Log.d(TAG, CLASS_NAME+"getStatus: send is OK, set mSwitchWhole unchecked");
 			mSpinner.setEnabled(false);
 			mSwitchWhole.setChecked(false);
 		}
