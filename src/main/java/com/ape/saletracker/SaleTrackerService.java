@@ -23,7 +23,7 @@ import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.wrapper.stk.HideMethod;
+//import com.wrapper.stk.HideMethod;
 import com.wrapper.stk.HideMethod.TelephonyManager;
 
 import java.util.Map;
@@ -508,7 +508,7 @@ public class SaleTrackerService extends Service {
 	}
 
 
-	private int  getSubID(){
+	/*private int  getSubID(){
 
 		int sim0_state=-1, sim1_state=-1;
 		String sim0_name="", sim1_name="";
@@ -554,7 +554,7 @@ public class SaleTrackerService extends Service {
 		return sSub;
 
 
-	}
+	}*/
 
 	private boolean isSmsAvailable() {
 		boolean enable = false;
