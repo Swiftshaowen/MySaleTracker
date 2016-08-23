@@ -25,7 +25,7 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "SaleTracker";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
-	private static final String VERSION_NUMBER = "201607261122";
+	private static final String VERSION_NUMBER = "201608120927";
 
 	private int mSpaceTime;
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
@@ -49,8 +49,8 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 			Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(context);
 
 			if(configMap != null){
-				DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
-				DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
+				DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
+				DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
 				Log.d(TAG, CLASS_NAME+"onReceive: DEFAULT_SPACE_TIME = "+DEFAULT_SPACE_TIME
 					+"; DEFAULT_START_TIME = "+DEFAULT_START_TIME);
 			}
@@ -106,6 +106,8 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
         am.cancel(alarmIntent);
         am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, mStartTime * 60*1000 , mSpaceTime * 60*1000 , alarmIntent);
     }
+
+	
 /*
 	private void readSendParamFromXml(){
 

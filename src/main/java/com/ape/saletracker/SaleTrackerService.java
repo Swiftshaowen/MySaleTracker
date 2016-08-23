@@ -19,13 +19,16 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
 //import com.wrapper.stk.HideMethod;
 import com.wrapper.stk.HideMethod.TelephonyManager;
+import com.wrapper.stk.HideMethod.SubscriptionManager;
 
+import java.util.List;
 import java.util.Map;
 
 public class SaleTrackerService extends Service {
@@ -159,6 +162,10 @@ public class SaleTrackerService extends Service {
 				getApplicationContext(), 0, stsIntent,
 				PendingIntent.FLAG_UPDATE_CURRENT);
 		am.cancel(alarmIntent);
+	}
+
+	public  void resetMsgSendNum(){
+		mMsgSendNum = 0;
 	}
 
 	private class StsAirplanReceiver extends BroadcastReceiver {
@@ -423,8 +430,34 @@ public class SaleTrackerService extends Service {
 				throw new IllegalArgumentException("Invalid message body");
 			}
 
+			// weijie.wang created.  8/3/16 Add for STSPTHA-34 start
+			final int defaultSubId = SmsManager.getDefault().getSubscriptionId();
+			Log.d(TAG, CLASS_NAME+"sendContentBySMS() defaultSubId = "+defaultSubId);
+			final Context context = getApplicationContext();
+			final SubscriptionManager subscriptionManager = SubscriptionManager.getDefault();
+			if(defaultSubId < 0){
+				List<SubscriptionInfo> subInfoList = subscriptionManager.getActiveSubscriptionInfoList(context);
+				Log.d(TAG, "sendContentBySMS(): subInfoList = "+subInfoList);
+				if(subInfoList != null && subInfoList.size() >= 1) {
+					for (SubscriptionInfo subInfo : subInfoList) {
+						Log.d(TAG, "sendContentBySMS(): subInfo = " + subInfo);
+						int subId = subInfo.getSubscriptionId();
+						if (subscriptionManager.isActiveSubId(subId,context)) {
+							subscriptionManager.setDefaultSmsSubId(subId, context);
+							break;
+						}
+					}
+				}
+			}
+			// weijie.wang created.  8/3/16 Add for STSPTHA-34 end
+
 			SmsManager.getDefault().sendTextMessage(mStrPhoneNo,null,msg_contents,sentPending,
 					deliverPending);
+
+			// weijie.wang created.  8/3/16 Add for STSPTHA-34 INLINE
+			if(defaultSubId < 0){
+				subscriptionManager.setDefaultSmsSubId(defaultSubId, context);
+			}
 		} catch (SecurityException e) {
 			Log.d(TAG, CLASS_NAME+" send sms fail");
 		}

@@ -174,6 +174,7 @@ public class SaleTrackerActivity extends Activity {
 					stciSP.writeConfigForTmeWapAddr(false);
 				}
 				mSwitchWhole.setChecked(false);
+				new SaleTrackerService().resetMsgSendNum();
 				ed.putInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME); //mOpenTime.getText().toString());
 				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
 				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
