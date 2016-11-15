@@ -20,12 +20,13 @@ import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
+import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
 //import com.wrapper.stk.HideMethod;
-import com.wrapper.stk.HideMethod.TelephonyManager;
+//import com.wrapper.stk.HideMethod.TelephonyManager;
 import com.wrapper.stk.HideMethod.SubscriptionManager;
 
 import java.util.List;
@@ -73,7 +74,7 @@ public class SaleTrackerService extends Service {
 	private final BroadcastReceiver mSaleTrackerReceiver = new SaleTrackerReceiver();
 	private final BroadcastReceiver mStsAirplanReceiver = new StsAirplanReceiver();
 
-	private static TelephonyManager mTm = TelephonyManager.getDefault();
+	private static TelephonyManager mTm;
 
 	private static final String CONFIG_CLIENT_NO = "client_no";
 	private static final String CONFIG_SEND_TYPE = "send_type";
@@ -91,6 +92,8 @@ public class SaleTrackerService extends Service {
 		Log.d(TAG, CLASS_NAME+"init() start");
 		mContext = getApplicationContext();
 		mStciSP.init(mContext);
+
+		mTm = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
 
 		initConfig();
 
@@ -595,7 +598,8 @@ public class SaleTrackerService extends Service {
 		String sim_name;
 		boolean sim_isSmsReady = false;
 
-		sim_name = mTm.getNetworkOperatorName();
+//		sim_name = mTm.getNetworkOperatorName();
+		sim_name = getNetworkOperatorName();
 
 		sim_state = mTm.getSimState();
 		Log.d(TAG, CLASS_NAME+"isSmsAvailable()   ------> ,  sim_state  " + sim_state
@@ -606,6 +610,12 @@ public class SaleTrackerService extends Service {
 		}
 
 		return enable;
+	}
+
+	public String getNetworkOperatorName(){
+		TelephonyManager tm =
+				(TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
+		return(tm.getNetworkOperatorName());
 	}
 
 	public boolean isNetworkAvailable() {
@@ -629,7 +639,7 @@ public class SaleTrackerService extends Service {
 	}
 
 	public String getIMEI() {
-		String imei = mTm.getDeviceId(0,mContext);
+		String imei = mTm.getDeviceId(0);
 		Log.d(TAG, CLASS_NAME+"getIMEI()   imei=" + imei);
 
 		if (imei == null || imei.isEmpty()) {

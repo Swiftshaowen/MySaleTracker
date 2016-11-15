@@ -25,7 +25,7 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "SaleTracker";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
-	private static final String VERSION_NUMBER = "201608120927";
+	private static final String VERSION_NUMBER = "20161114";
 
 	private int mSpaceTime;
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
