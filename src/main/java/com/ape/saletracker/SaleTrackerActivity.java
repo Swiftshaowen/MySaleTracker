@@ -37,7 +37,6 @@ public class SaleTrackerActivity extends Activity {
 
 	private EditText mOpenTime;
 	private EditText mSpaceTime;
-	private EditText mDayTime;
 	private CheckBox mNotify;
 	private CheckBox mSwitchWhole;
 	private Spinner mSpinner;
@@ -57,7 +56,13 @@ public class SaleTrackerActivity extends Activity {
 	private static final String[] mStrings = {
         "sms", "net", "net and sms"
     };
-	 
+
+	private static SaleTrackerConfigSP stciSP = new SaleTrackerConfigSP();
+
+	TextView  showOpenFileTextView;
+	TextView setResutTextView;
+	TextView sendTypeTextView;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class SaleTrackerActivity extends Activity {
 
 		setContentView(R.layout.main);	
 		mContext = getApplicationContext();
+		stciSP.init(mContext);
 
 		// get version name
 		try {
@@ -81,9 +87,11 @@ public class SaleTrackerActivity extends Activity {
 		pre = getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE);
 		ed = pre.edit();
 
+		showOpenFileTextView= (TextView)this.findViewById(R.id.tvShowOpenFile);
+		setResutTextView = (TextView)this.findViewById(R.id.tvShowSendResult);
+		sendTypeTextView = (TextView)this.findViewById(R.id.tvShowSendType);
 		mOpenTime = (EditText)findViewById(R.id.editopentime);
 		mSpaceTime = (EditText)findViewById(R.id.spacetime);
-		mDayTime = (EditText)findViewById(R.id.daytime);
 
 		mNotify = (CheckBox)findViewById(R.id.notify);
 		mNotify.setChecked(pre.getBoolean(Contant.KEY_NOTIFY, getResources().getBoolean(R.bool.dialog_notify)));
@@ -114,7 +122,6 @@ public class SaleTrackerActivity extends Activity {
 				 } else {
 					 mSpinner.setEnabled(true);
 				 }
-//				 getStatus();
 			 }
 		});
 
@@ -128,7 +135,7 @@ public class SaleTrackerActivity extends Activity {
 						AdapterView<?> parent, View view, int position, long id) {
 				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, position);
 				ed.commit();
-				getStatus();
+				updateUI();
 			}
 
 			public void onNothingSelected(AdapterView<?> parent) {
@@ -155,8 +162,7 @@ public class SaleTrackerActivity extends Activity {
 			  	else{
 					ed.putInt(Contant.KEY_OPEN_TIME, Integer.parseInt(mOpenTime.getText().toString(), 10)); //mOpenTime.getText().toString());
 					ed.putInt(Contant.KEY_SPACE_TIME, Integer.parseInt(mSpaceTime.getText().toString(),10));
-					ed.putInt(Contant.KEY_DAY_TIME, Integer.parseInt(mDayTime.getText().toString(),10));
-					ed.commit();	
+					ed.commit();
 					showToast("Save successful" );
 				}
 			}
@@ -166,21 +172,18 @@ public class SaleTrackerActivity extends Activity {
 		btClear.setOnClickListener(new OnClickListener() {			
 			@Override
 			public void onClick(View v) {
-				Log.d(TAG, CLASS_NAME+"setOnClickListener");
-				if(Contant.STS_SP ==SaleTrackerService.STS_CONFIG_TYPE){
-					SaleTrackerConfigSP stciSP = new SaleTrackerConfigSP();
-					stciSP.init(mContext);
-					stciSP.write_secro(0x00);
-					stciSP.writeConfigForTmeWapAddr(false);
-				}
+				Log.d(TAG, CLASS_NAME + "setOnClickListener");
+				stciSP.writeConfigForTmeWapAddr(false);
+				stciSP.writeSendedResult(false);
+				stciSP.writeSendedNumber(0);
+
 				mSwitchWhole.setChecked(false);
-				new SaleTrackerService().resetMsgSendNum();
 				ed.putInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME); //mOpenTime.getText().toString());
 				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
 				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
 				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
 				ed.commit();
-				getStatus();
+				updateUI();
 				showToast("Clear successful" );
 			}
 		});
@@ -207,14 +210,11 @@ public class SaleTrackerActivity extends Activity {
 	protected void onResume() {
 		Log.d(TAG, CLASS_NAME+"onResume");
 		super.onResume();
-		getStatus();
+		updateUI();
 	}
 
-	public void getStatus(){
-		Log.d(TAG, CLASS_NAME+"getStatus: ");
-		TextView  showOpenFileTextView= (TextView)this.findViewById(R.id.tvShowOpenFile);
-		TextView setResutTextView = (TextView)this.findViewById(R.id.tvShowSendResult);
-		TextView sendTypeTextView = (TextView)this.findViewById(R.id.tvShowSendType);
+	public void updateUI(){
+		Log.d(TAG, CLASS_NAME + "updateUI: ");
 		setResutTextView.setText("Send result : No"+ "    result2 : No");
 
 		// Update UI
@@ -224,47 +224,35 @@ public class SaleTrackerActivity extends Activity {
 				DEFAULT_START_TIME));
 		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
 				DEFAULT_SPACE_TIME));
-		mDayTime.setText("" + pre.getInt(Contant.KEY_DAY_TIME,
-				Contant.DAY_TIME));
-		
-		if(Contant.STS_JNI ==SaleTrackerService.STS_CONFIG_TYPE){
+
+		/*if(Contant.STS_JNI ==SaleTrackerService.STS_CONFIG_TYPE){
 			showOpenFileTextView.setText ("Open Config File :  OK");
 		}else if(Contant.STS_NV == SaleTrackerService.STS_CONFIG_TYPE){
 			showOpenFileTextView.setText ("Open Config File :  OK (NVRAM VERSION)");
 		}
 		else if(Contant.STS_SP == SaleTrackerService.STS_CONFIG_TYPE){
 			showOpenFileTextView.setText ("Open Config File :  OK (SP VERSION)");
-		}
-
-		int data;
+		}*/
 
 		boolean bSendToTme = false;
 
-		if(Contant.STS_SP == SaleTrackerService.STS_CONFIG_TYPE){
-			SaleTrackerConfigSP stciSP = new SaleTrackerConfigSP();
-			stciSP.init(mContext);
-			data = stciSP.read_secro();
-
-			showOpenFileTextView.setText ("\n IMEI1 :  " + HideMethod.TelephonyManager.getDefault().getDeviceId(0,mContext)+"\n");
-			bSendToTme = stciSP.isSendedToTmeWapAddr();
-		}
+		showOpenFileTextView.setText ("\n IMEI1 :  " + HideMethod.TelephonyManager.getDefault().getDeviceId(0,mContext)+"\n");
+		bSendToTme = stciSP.readConfigForTmeWapAddr();
 
 		/*******************SHOW SEND TYPE *****************/
 		String strTmp;
 		int iSendTypeTmp;
 
 		//if first send time is ok, set mSwitchWhole unchecked
-		if((data & 0x000000ff) == 0x01){
-			Log.d(TAG, CLASS_NAME+"getStatus: send is OK, set mSwitchWhole unchecked");
+		if(stciSP.readSendedResult()){
+			Log.d(TAG, CLASS_NAME+"updateUI: send is OK, set mSwitchWhole unchecked");
 			mSpinner.setEnabled(false);
 			mSwitchWhole.setChecked(false);
 		}
 
 		if(mSwitchWhole.isChecked()){
-//			iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 1);
 			strTmp = "SendType(from the Switch control) : ";
 		}else {
-//			iSendTypeTmp = DEFAULT_SEND_TYPE;
 			strTmp = "SendType : ";
 		}
 		iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
@@ -282,7 +270,7 @@ public class SaleTrackerActivity extends Activity {
 		}
 
 		/*******************SHOW SEND RESULT*****************/
-		if((data & 0x000000ff) == 0x01)
+		if(stciSP.readSendedResult())
 		{
 			mStrSendResult = "  OK ;";
 		}
@@ -302,26 +290,26 @@ public class SaleTrackerActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			Log.d(TAG, CLASS_NAME+"refreshReceiver onReceive: ");
-			getStatus();
+			updateUI();
 		}
 	};
 
-	private void pickTimeConfigs(){
-		Log.d(TAG, CLASS_NAME+"pickTimeConfigs: ");
+	private void pickTimeConfigs() {
+		Log.d(TAG, CLASS_NAME + "pickTimeConfigs: ");
 
 		Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(getApplicationContext());
-		if(configMap != null){
+		if (configMap != null) {
 			DEFAULT_SEND_TYPE = Integer.parseInt(configMap.get(CONFIG_SEND_TYPE));
 			DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
 			DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
 
-			Log.w(TAG, CLASS_NAME+" pickCountryConfigs: "
+			Log.w(TAG, CLASS_NAME + " pickCountryConfigs: "
 					+ "\n   DEFAULT_SEND_TYPE =" + DEFAULT_SEND_TYPE
-					+ "\n   DEFAULT_START_TIME ="+DEFAULT_START_TIME
-					+ "\n   DEFAULT_SPACE_TIME =" +DEFAULT_SPACE_TIME
+					+ "\n   DEFAULT_START_TIME =" + DEFAULT_START_TIME
+					+ "\n   DEFAULT_SPACE_TIME =" + DEFAULT_SPACE_TIME
 			);
-		}else{
-			Log.d(TAG,CLASS_NAME+" pickTimeConfigs: config doesn't exist");
+		} else {
+			Log.d(TAG, CLASS_NAME + " pickTimeConfigs: config doesn't exist");
 		}
 	}
 }

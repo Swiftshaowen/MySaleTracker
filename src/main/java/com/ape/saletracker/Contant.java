@@ -20,9 +20,9 @@ public class Contant {
     public static final int MAX_SEND_COUNT_BY_SMS = 3; // this value must > 1
     public static final int MAX_SEND_CONUT_BY_NET = (90 * 24);
 
-    public static final int ACTION_SEND_BY_SMS = 0x2000;
-    public static final int ACTION_SEND_BY_NET = 0x2001;
-    public static final int ACTION_SEND_RST_BY_NET = 0x2002;
+    public static final int ACTION_SEND_BY_SMS = 0;
+    public static final int ACTION_SEND_BY_NET = 1;
+    public static final int ACTION_SEND_RST_BY_NET = 2;
 
     public static final String KEY_OPEN_TIME = "KEY_OPEN_TIME";
     public static final String KEY_SPACE_TIME = "KEY_SPACE_TIME";

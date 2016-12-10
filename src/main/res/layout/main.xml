@@ -91,14 +91,7 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:text="@string/day_set_text" />
-    
-    <EditText 
-        android:id="@+id/daytime"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"   
-        android:visibility="gone" 
-        android:inputType="number"  
-        />      
+
     <Button
         android:id="@+id/btnSave"
         android:layout_width="wrap_content"
