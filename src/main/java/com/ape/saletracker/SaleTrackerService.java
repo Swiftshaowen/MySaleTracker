@@ -267,7 +267,7 @@ public class SaleTrackerService extends Service {
 
 				popNotifyWindow(context);
 
-				++mMsgSendNum;
+				mStciSP.writeSendedNumber(++mMsgSendNum);
 
 				Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() MsgSendMode = " + MsgSendMode);
 				if (MsgSendMode != -1) {
@@ -422,8 +422,6 @@ public class SaleTrackerService extends Service {
 			return;
 		}
 		try {
-			Log.d(TAG,CLASS_NAME+
-					"sendContentByNetwork()   mMsgSendNum = " + mMsgSendNum);
 			int msgid = mMsgSendNum;
 			String encryptContents = RSAHelper.encrypt(publicKey, msg_contents);
 			url = mHosturl + "&msgid=" + msgid + "&repinfo=" + encryptContents;
