@@ -204,7 +204,8 @@ public class SaleTrackerService extends Service {
 	private class SaleTrackerReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() onReceive start: action = " + intent.getAction());
+			Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() onReceive start: action = " + intent.getAction()
+					+ "; elapsed time = " + SystemClock.elapsedRealtime()/1000);
 
 			if (intent.getAction().equals(Contant.STS_REFRESH)) {
 				if (mIsSendSuccess || (mMsgSendNum > Contant.MAX_SEND_CONUT_BY_NET)) {
