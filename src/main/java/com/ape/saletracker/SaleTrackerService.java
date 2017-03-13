@@ -70,6 +70,7 @@ public class SaleTrackerService extends Service {
 	private static SaleTrackerConfigSP mStciSP = new SaleTrackerConfigSP();
 	private final BroadcastReceiver mSaleTrackerReceiver = new SaleTrackerReceiver();
 	private final BroadcastReceiver mStsAirplanReceiver = new StsAirplanReceiver();
+	private final BroadcastReceiver mNetConnectReceiver = new StsNetConnectReceiver();
 
 	private static TelephonyManager mTm;
 
@@ -106,6 +107,7 @@ public class SaleTrackerService extends Service {
 			registerReceiver(mSaleTrackerReceiver, new IntentFilter(Contant.STS_REFRESH));
 			registerReceiver(mSaleTrackerReceiver, new IntentFilter(Contant.ACTION_SMS_SEND));
 			registerReceiver(mSaleTrackerReceiver, new IntentFilter(Contant.ACTION_SMS_DELIVERED));
+			registerReceiver(mNetConnectReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		}
 	}
 
@@ -143,12 +145,8 @@ public class SaleTrackerService extends Service {
 		airplaneModeOn = false;
         try {
             unregisterReceiver(mSaleTrackerReceiver);
-        } catch (Exception e) {
-            Log.e(TAG, CLASS_NAME+"onDestroy() Exception" + e.getMessage());
-        }
-
-		try {
 			unregisterReceiver(mStsAirplanReceiver);
+			unregisterReceiver(mNetConnectReceiver);
 		} catch (Exception e) {
 			Log.e(TAG, CLASS_NAME+"onDestroy() Exception" + e.getMessage());
 		}
@@ -179,6 +177,8 @@ public class SaleTrackerService extends Service {
 					try {
 						SaleTrackerService.this
 								.unregisterReceiver(mSaleTrackerReceiver);
+						SaleTrackerService.this
+								.unregisterReceiver(mNetConnectReceiver);
 					} catch (IllegalArgumentException e) {
 						android.util.Log.e(TAG, CLASS_NAME+"StsAirplanReceiver()   registerReceiverSafe(), FAIL!");
 					}
@@ -195,6 +195,8 @@ public class SaleTrackerService extends Service {
 					SaleTrackerService.this.registerReceiver(
 							mSaleTrackerReceiver, new IntentFilter(
                                     Contant.ACTION_SMS_DELIVERED));
+					registerReceiver(mNetConnectReceiver, new IntentFilter(
+							ConnectivityManager.CONNECTIVITY_ACTION));
 				}
 			}
 		}
@@ -245,7 +247,8 @@ public class SaleTrackerService extends Service {
 					case Contant.MSG_SEND_BY_NET:
 						Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() send type by NET  mMsgSendNum = "
 								+ mMsgSendNum);
-						MsgSendMode = Contant.ACTION_SEND_BY_NET;
+//						MsgSendMode = Contant.ACTION_SEND_BY_NET;
+						mIsSendOnNetConnected = true;
 						break;
 
 					case Contant.MSG_SEND_BY_NET_AND_SMS:
@@ -258,7 +261,8 @@ public class SaleTrackerService extends Service {
 							Log.d(TAG,CLASS_NAME +
 									"SaleTrackerReceiver() MSG_SEND_BY_NET_AND_SMS--net  mMsgSendNum = "
 											+ mMsgSendNum);
-							MsgSendMode = Contant.ACTION_SEND_BY_NET;
+//							MsgSendMode = Contant.ACTION_SEND_BY_NET;
+							mIsSendOnNetConnected = true;
 						}
 						break;
 
@@ -574,7 +578,7 @@ public class SaleTrackerService extends Service {
 
 		// weijie created. 17-3-13. Add for QMobile
 		if (SaleTrackerUti.isQMobile()) {
-			mStrPhoneNo = getApplicationContext().getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE)
+			mStrPhoneNo = mContext.getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE)
 					.getString(Contant.KEY_SERVER_NUMBER, Contant.SERVER_NUMBER);
 
 		} else {
@@ -660,7 +664,7 @@ public class SaleTrackerService extends Service {
 		Log.d(TAG, CLASS_NAME + "pickCountryConfigs: ");
 
 		String projectName = SystemProperties.get("ro.project", "trunk");
-		Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(getApplicationContext());
+		Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(mContext);
 		if(configMap != null){
 			mClientNo = configMap.get(CONFIG_CLIENT_NO);
 			mDefaultSendType = Integer.parseInt(configMap.get(CONFIG_SEND_TYPE));
@@ -689,5 +693,41 @@ public class SaleTrackerService extends Service {
 		Log.d(TAG, CLASS_NAME + "refreshPanelStatus: ");
 		Intent intent = new Intent(Contant.ACTION_REFRESH_PANEL);
 		mContext.sendBroadcast(intent);
+	}
+
+	private static boolean mIsSendOnNetConnected = false;
+	private class StsNetConnectReceiver extends BroadcastReceiver {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver() onReceive: start  intent=" + intent.getAction());
+
+			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+				boolean bMobile = checkNetworkConnection(context);//// TODO: 17-3-13
+				if (mIsSendOnNetConnected && bMobile && !mIsSendSuccess) {
+					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver()  net was connected and start to send ");
+					MessageHandler.obtainMessage(Contant.ACTION_SEND_BY_NET).sendToTarget();
+				} else {
+					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver()  net was connected");
+				}
+			}
+		}
+
+	}
+
+	public static boolean checkNetworkConnection(Context context){
+		final ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final android.net.NetworkInfo wifi =connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		final android.net.NetworkInfo mobile =connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+
+		Log.d(TAG, CLASS_NAME + " checkNetworkConnection():  wifi.getState()=" +wifi.getState()
+				+ " wifi.getTypeName="+ wifi.getTypeName()
+				+ " mobile.getState()="+ mobile.getState()
+				+ " mobile.getTypeName="+ mobile.getTypeName());
+
+		// 只考虑连接数据网络的情况
+		if(mobile.getState() == NetworkInfo.State.CONNECTED)  //getState()方法是查询是否连接了数据网络
+			return true;
+		else
+			return false;
 	}
 }

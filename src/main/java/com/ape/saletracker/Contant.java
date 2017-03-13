@@ -19,7 +19,7 @@ public class Contant {
     public static final int MSG_SEND_BY_NET_AND_SMS = 2;
 
     public static final int MAX_SEND_COUNT_BY_SMS = 3; // this value must > 1
-    public static final int MAX_SEND_CONUT_BY_NET = (90 * 24);
+    public static final int MAX_SEND_CONUT_BY_NET = (365 * 24);
 
     public static final int ACTION_SEND_BY_SMS = 0;
     public static final int ACTION_SEND_BY_NET = 1;
