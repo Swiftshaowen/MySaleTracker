@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,32 +34,36 @@ public class SaleTrackerActivity extends Activity {
 	private static final String TAG = "SaleTracker";
 	private static final String CLASS_NAME = "SaleTrackerActivity---->";
 	private static String mVersion;
-	private static String mStrSendResult = "unknow";
+	private static String mStrSendResult = "unknown";
 
+	private LinearLayout mSendTypeLayout;
 	private EditText mOpenTime;
 	private EditText mSpaceTime;
+	private EditText mDayTime;
+	private EditText mServerNumber;
 	private CheckBox mNotify;
 	private CheckBox mSwitchWhole;
 	private Spinner mSpinner;
 	public static SharedPreferences pre ;
 	public static Editor ed ;
-
 	private static Context mContext;
 
 	private int DEFAULT_START_TIME = Contant.START_TIME;
+
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
 	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_NET;
-
+	private String DEFAULT_SERVER_NUMBER = Contant.SERVER_NUMBER;
 	private static final String CONFIG_SEND_TYPE = "send_type";
+
 	private static final String CONFIG_START_TIME = "start_time";
 	private static final String CONFIG_SPACE_TIME = "space_time";
-
 	private static final String[] mStrings = {
         "sms", "net", "net and sms"
     };
 
 	private static SaleTrackerConfigSP stciSP = new SaleTrackerConfigSP();
 
+	private TextView mTips;
 	TextView  showOpenFileTextView;
 	TextView setResutTextView;
 	TextView sendTypeTextView;
@@ -77,6 +82,7 @@ public class SaleTrackerActivity extends Activity {
 		try {
 			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
 			mVersion = "Version: "+packageInfo.versionName;
+			Log.d(TAG, CLASS_NAME + " onCreate: mVersion = " + mVersion);
 		} catch (PackageManager.NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -84,45 +90,68 @@ public class SaleTrackerActivity extends Activity {
 
 		pickTimeConfigs();
 
+		init();
+
+	}
+
+	/**
+	 * @param
+	 * @return
+	 *
+	 */
+	private void init(){
 		pre = getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE);
 		ed = pre.edit();
 
+		mTips = (TextView) findViewById(R.id.tvTips);
 		showOpenFileTextView= (TextView)this.findViewById(R.id.tvShowOpenFile);
 		setResutTextView = (TextView)this.findViewById(R.id.tvShowSendResult);
 		sendTypeTextView = (TextView)this.findViewById(R.id.tvShowSendType);
 		mOpenTime = (EditText)findViewById(R.id.editopentime);
 		mSpaceTime = (EditText)findViewById(R.id.spacetime);
+		mDayTime = (EditText)findViewById(R.id.daytime);
+
+		// weijie created. 17-3-13. Add for QMobile
+		LinearLayout qmobileLayout = (LinearLayout) findViewById(R.id.qmobile_layout);
+		mSendTypeLayout = (LinearLayout) findViewById(R.id.llSendType);
+		mServerNumber = (EditText) findViewById(R.id.server_number);
+		if (SaleTrackerUti.isQMobile()) {
+			mTips.setVisibility(View.GONE);
+			qmobileLayout.setVisibility(View.VISIBLE);
+			mSendTypeLayout.setVisibility(View.GONE);
+			ed.putInt(Contant.KEY_SELECT_SEND_TYPE, Contant.ACTION_SEND_BY_SMS);
+		}
 
 		mNotify = (CheckBox)findViewById(R.id.notify);
 		mNotify.setChecked(pre.getBoolean(Contant.KEY_NOTIFY, getResources().getBoolean(R.bool.dialog_notify)));
 		mNotify.setOnClickListener(new OnClickListener() {
-		  @Override
-		  public void onClick(View v) {
-			  ed.putBoolean(Contant.KEY_NOTIFY, mNotify.isChecked());
-			  ed.commit();
-		  }
+			@Override
+			public void onClick(View v) {
+				ed.putBoolean(Contant.KEY_NOTIFY, mNotify.isChecked());
+				ed.commit();
+			}
 		});
 
 		mSwitchWhole = (CheckBox)findViewById(R.id.switchSendType);
-		if(SystemProperties.get("ro.project", "trunk").equals("oys_ru")){
-				mSwitchWhole.setVisibility(View.INVISIBLE);
-		}else{
-				mSwitchWhole.setVisibility(View.VISIBLE);
+		if (SystemProperties.get("ro.project", "trunk").equals("oys_ru")) {
+			mSwitchWhole.setVisibility(View.INVISIBLE);
+		} else {
+			mSwitchWhole.setVisibility(View.VISIBLE);
 		}
 		mSwitchWhole.setChecked(pre.getBoolean(Contant.KEY_SWITCH_SENDTYPE, false));
 		mSwitchWhole.setOnClickListener(new OnClickListener() {
-			 @Override
-			 public void onClick(View v) {
-				 Log.d(TAG, CLASS_NAME+"mSwitchWhole onClick: isChecked = "+mSwitchWhole.isChecked());
-				 ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, mSwitchWhole.isChecked());
-				 ed.commit();
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, CLASS_NAME+"mSwitchWhole onClick: isChecked = "+mSwitchWhole.isChecked());
+				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, mSwitchWhole.isChecked());
+				ed.commit();
 
-				 if (mSwitchWhole.isChecked() == false) {
-					 mSpinner.setEnabled(false);
-				 } else {
-					 mSpinner.setEnabled(true);
-				 }
-			 }
+				if (mSwitchWhole.isChecked() == false) {
+					mSpinner.setEnabled(false);
+				} else {
+					mSpinner.setEnabled(true);
+				}
+			}
 		});
 
 		mSpinner = (Spinner) findViewById(R.id.spinnerSendType);
@@ -132,36 +161,38 @@ public class SaleTrackerActivity extends Activity {
 
 		mSpinner.setOnItemSelectedListener( new OnItemSelectedListener() {
 			public void onItemSelected(
-						AdapterView<?> parent, View view, int position, long id) {
+					AdapterView<?> parent, View view, int position, long id) {
 				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, position);
 				ed.commit();
 				updateUI();
 			}
 
 			public void onNothingSelected(AdapterView<?> parent) {
-			   ed.putInt(Contant.KEY_SELECT_SEND_TYPE, -1);
+				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, -1);
 				ed.commit();
 			}
 		});
 
 		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
 		mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
-		  
+
 		TextView showVersionTv = (TextView)findViewById(R.id.tvShowVersion);
 		showVersionTv.setText(mVersion);
 
+		Log.d(TAG, "onCreate: Button findViewById");
 		Button btSave = (Button)findViewById(R.id.btnSave);
-		btSave.setOnClickListener(new OnClickListener() {			
+		btSave.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if("0".equals(mOpenTime.getText().toString()) || "0".equals(mSpaceTime.getText().toString())
-					 || "".equals(mOpenTime.getText().toString()) || "".equals(mSpaceTime.getText().toString()))
+						|| "".equals(mOpenTime.getText().toString()) || "".equals(mSpaceTime.getText().toString()))
 				{
 					showToast(getResources().getString(R.string.sts_invalid_value));
 				}
-			  	else{
+				else{
 					ed.putInt(Contant.KEY_OPEN_TIME, Integer.parseInt(mOpenTime.getText().toString(), 10)); //mOpenTime.getText().toString());
 					ed.putInt(Contant.KEY_SPACE_TIME, Integer.parseInt(mSpaceTime.getText().toString(),10));
+					ed.putString(Contant.KEY_SERVER_NUMBER, mServerNumber.getText().toString());
 					ed.commit();
 					showToast("Save successful" );
 				}
@@ -169,7 +200,7 @@ public class SaleTrackerActivity extends Activity {
 		});
 
 		Button btClear = (Button)findViewById(R.id.btnclear);
-		btClear.setOnClickListener(new OnClickListener() {			
+		btClear.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, CLASS_NAME + "setOnClickListener");
@@ -215,7 +246,6 @@ public class SaleTrackerActivity extends Activity {
 
 	public void updateUI(){
 		Log.d(TAG, CLASS_NAME + "updateUI: ");
-		setResutTextView.setText("Send result : No"+ "    result2 : No");
 
 		// Update UI
 		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
@@ -224,24 +254,13 @@ public class SaleTrackerActivity extends Activity {
 				DEFAULT_START_TIME));
 		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
 				DEFAULT_SPACE_TIME));
+		mServerNumber.setText(""+pre.getString(Contant.KEY_SERVER_NUMBER,
+				DEFAULT_SERVER_NUMBER));
 
-		/*if(Contant.STS_JNI ==SaleTrackerService.STS_CONFIG_TYPE){
-			showOpenFileTextView.setText ("Open Config File :  OK");
-		}else if(Contant.STS_NV == SaleTrackerService.STS_CONFIG_TYPE){
-			showOpenFileTextView.setText ("Open Config File :  OK (NVRAM VERSION)");
-		}
-		else if(Contant.STS_SP == SaleTrackerService.STS_CONFIG_TYPE){
-			showOpenFileTextView.setText ("Open Config File :  OK (SP VERSION)");
-		}*/
-
-		boolean bSendToTme = false;
-
-		showOpenFileTextView.setText ("\n IMEI1 :  " + HideMethod.TelephonyManager.getDefault().getDeviceId(0,mContext)+"\n");
-		bSendToTme = stciSP.readConfigForTmeWapAddr();
 
 		/*******************SHOW SEND TYPE *****************/
 		String strTmp;
-		int iSendTypeTmp;
+		int iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
 
 		//if first send time is ok, set mSwitchWhole unchecked
 		if(stciSP.readSendedResult()){
@@ -255,34 +274,39 @@ public class SaleTrackerActivity extends Activity {
 		}else {
 			strTmp = "SendType : ";
 		}
-		iSendTypeTmp = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
-			
-		if(iSendTypeTmp == 0){
-			sendTypeTextView.setText(strTmp + " sms");
-		}else if(iSendTypeTmp == 1)
-		{
-			sendTypeTextView.setText(strTmp + " net");
-		}else if(iSendTypeTmp == 2)
-		{
-			sendTypeTextView.setText(strTmp + " net and sms");
-		}else{
-			sendTypeTextView.setText(strTmp + " unknow");
+
+		switch (iSendTypeTmp) {
+			case Contant.ACTION_SEND_BY_SMS:
+				sendTypeTextView.setText(strTmp + " sms");
+				break;
+			case Contant.ACTION_SEND_BY_NET:
+				sendTypeTextView.setText(strTmp + " net");
+				break;
+			case Contant.MSG_SEND_BY_NET_AND_SMS:
+				sendTypeTextView.setText(strTmp + " net and sms");
+				break;
+			default:
+				sendTypeTextView.setText(strTmp + " unknown");
 		}
 
+		/*******************SHOW IMEI*****************/
+		boolean bSendToTme = false;
+		bSendToTme = stciSP.readConfigForTmeWapAddr();
+
+		showOpenFileTextView.setText ("IMEI1 :  " + HideMethod.TelephonyManager.getDefault().getDeviceId(0,mContext));
+
 		/*******************SHOW SEND RESULT*****************/
-		if(stciSP.readSendedResult())
-		{
-			mStrSendResult = "  OK ;";
-		}
-		else 
-		{
-			mStrSendResult = "  No ;";
-		}
+		mStrSendResult = stciSP.readSendedResult() ? "  OK " : "  No ";
+
 		if(bSendToTme) {
 			setResutTextView.setText("Send result1 : " + mStrSendResult + "    result2:  OK");
 		}
 		else{
 			setResutTextView.setText("Send result1 : " + mStrSendResult + "    result2:  No");
+		}
+
+		if (SaleTrackerUti.isQMobile()) {
+			setResutTextView.setText("Send result1 : " + mStrSendResult);
 		}
 	}
 

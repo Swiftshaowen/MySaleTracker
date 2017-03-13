@@ -8,6 +8,7 @@ public class Contant {
     public static int START_TIME = 180;
     public static int SPACE_TIME = 60;
     public static int DAY_TIME = 24*60;
+    public static String SERVER_NUMBER = "8646";
 
     public static final int STS_JNI = 1;
     public static final int STS_NV = 2;
@@ -30,6 +31,7 @@ public class Contant {
     public static final String KEY_NOTIFY = "KEY_NOTIFY";
     public static final String KEY_SWITCH_SENDTYPE = "KEY_SWITCH_SENDTYPE";
     public static final String KEY_SELECT_SEND_TYPE = "KEY_SELECT_SEND_TYPE";
+    public static final String KEY_SERVER_NUMBER = "8646";
 
     public static final String STS_REFRESH = "STS_REFRESH";
     public static final String STSDATA_CONFIG = "STSDATA_CONFIG";

@@ -9,7 +9,7 @@ android {
         minSdkVersion 23
         targetSdkVersion 23
         versionCode 9008161
-        versionName "7.0.10.08"
+        versionName "7.0.10.11"
         //output apk name : ApeSaleTracker_6.0.0.02.apk
     }
     buildTypes {

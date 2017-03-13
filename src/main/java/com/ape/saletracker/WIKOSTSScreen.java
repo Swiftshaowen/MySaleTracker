@@ -2,6 +2,7 @@ package com.ape.saletracker;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.SystemProperties;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.Button;
@@ -38,7 +39,11 @@ public class WIKOSTSScreen extends Activity {
 				(STATUS_BAR_DISABLE_RECENT|STATUS_BAR_DISABLE_HOME|STATUS_BAR_DISABLE_BACK);
 
 		//guchunhua,DATE20150402,modify for FEAALFRA-235,END
-		setContentView(R.layout.activity_wikostsscreen);
+		if ("QMobile".equalsIgnoreCase(SystemProperties.get("ro.product.brand", "trunk"))) {
+			setContentView(R.layout.activity_qmobilescreen);
+		} else {
+			setContentView(R.layout.activity_wikostsscreen);
+		}
 		Button button_yes = (Button)findViewById(R.id.button_ok);
 		//Button button_no = (Button)findViewById(R.id.button_no);
 		button_yes.setOnClickListener(new View.OnClickListener() {

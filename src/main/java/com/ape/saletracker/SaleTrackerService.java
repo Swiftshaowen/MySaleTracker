@@ -228,8 +228,6 @@ public class SaleTrackerService extends Service {
 					mDefaultSendType = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 0);
 					Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() only for test ----- send type switch : "
 							+ mDefaultSendType);
-				} else {
-					mDefaultSendType = Contant.MSG_SEND_BY_NET;
 				}
 
 				int MsgSendMode = -1;
@@ -516,14 +514,34 @@ public class SaleTrackerService extends Service {
 		return false;
 	}
 
-	public String getIMEI() {
+	public static String getIMEI() {
 		String imei = mTm.getDeviceId(0);
-		Log.d(TAG, CLASS_NAME+"getIMEI()   imei=" + imei);
+		Log.d(TAG, CLASS_NAME+"getIMEI()   imei = " + imei);
 
 		if (imei == null || imei.isEmpty()) {
 			return new String(Contant.NULL_IMEI);
 		}
 		return imei;
+	}
+
+	/**
+	 * @param
+	 * @return
+	 * getIMEI for PK
+	 */
+	public static String getIMEIPK() {
+		String imei1 = mTm.getDeviceId(0);
+		String imei2 = mTm.getDeviceId(1);
+		if (imei1 == null || imei1.isEmpty()) {
+			imei1 = Contant.NULL_IMEI;
+		}
+		if (imei2 == null || imei2.isEmpty()) {
+			imei2 = Contant.NULL_IMEI;
+		}
+		Log.d(TAG, CLASS_NAME+"getIMEI()   imei1 = " + imei1
+			+"; imei2 = "+imei2);
+		String imeiDisplay = imei1 + " " + imei2;
+		return imeiDisplay;
 	}
 
 
@@ -553,8 +571,15 @@ public class SaleTrackerService extends Service {
 		} else if (sim_operator.equals(PLMNTest4)) {
 			mStrPhoneNo = NUM_SMS;
 		}*/
-		mStrPhoneNo = NUM_SMS;
 
+		// weijie created. 17-3-13. Add for QMobile
+		if (SaleTrackerUti.isQMobile()) {
+			mStrPhoneNo = getApplicationContext().getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE)
+					.getString(Contant.KEY_SERVER_NUMBER, Contant.SERVER_NUMBER);
+
+		} else {
+			mStrPhoneNo = NUM_SMS;
+		}
 		Log.d(TAG, CLASS_NAME + "setDestNum() =" + mStrPhoneNo);
 	}
 
@@ -568,18 +593,22 @@ public class SaleTrackerService extends Service {
 			return "";
 		}
 		// tishi
-		StringBuffer REG = new StringBuffer("TN:IMEI1,");
-		REG.append(mStrIMEI);
+		String REG = mStrIMEI;
 
 		// Client No
-		StringBuffer SAP_NO = new StringBuffer(",");
-		SAP_NO.append(mClientNo);
+		String SAP_NO = mClientNo;
 
 		// Client product model
-		StringBuffer PRODUCT_NO = new StringBuffer(",");
+		StringBuffer PRODUCT_NO = new StringBuffer();
 		if(DEFAULT_VALUE.equals(mStrModel) || "".equals(mStrModel))
 		{
-			PRODUCT_NO.append(Build.MODEL);
+			// weijie created. 17-3-3. Modify for QMobile
+			if (SaleTrackerUti.isQMobile()) {
+				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
+				PRODUCT_NO.append(model);
+			} else {
+				PRODUCT_NO.append(Build.MODEL);
+			}
 		}
 		else
 		{
@@ -601,11 +630,10 @@ public class SaleTrackerService extends Service {
 		CELL_ID.append(Integer.toHexString(cellId).toUpperCase());*/
 
 		// add sn no 20150703
-		StringBuffer SN_NO = new StringBuffer(",");
-		SN_NO.append(Build.SERIAL);
+		String SN_NO = Build.SERIAL;
 
 		// Soft version
-		StringBuffer SOFTWARE_NO = new StringBuffer(",");
+		StringBuffer SOFTWARE_NO = new StringBuffer();
 		String customVersion = SystemProperties.get("ro.custom.build.version");
 		String strCountryName = SystemProperties.get("ro.project", "trunk");
 		if (strCountryName.startsWith("wik_")) {
@@ -613,8 +641,13 @@ public class SaleTrackerService extends Service {
 		}
 		SOFTWARE_NO.append(customVersion);
 
-		smsContent.append(REG).append(SAP_NO).append(PRODUCT_NO)
-				.append(SOFTWARE_NO).append(SN_NO);
+		// weijie created. 17-3-8. Modify for QMbile
+		if (SaleTrackerUti.isQMobile()) {
+			smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
+		} else {
+			smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
+					.append(","+SOFTWARE_NO).append(","+SN_NO);
+		}
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
 		return smsContent.toString();

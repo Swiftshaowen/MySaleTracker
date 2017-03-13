@@ -80,7 +80,17 @@ public class SaleTrackerUti {
         return  configMap;
     }
 
-
+    /**
+     * @param
+     * @return
+     *
+     */
+    public static boolean isQMobile(){
+        if ("QMobile".equalsIgnoreCase(SystemProperties.get("ro.product.brand", "trunk"))) {
+            return true;
+        }
+        return false;
+    }
 
 
 

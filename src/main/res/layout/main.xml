@@ -1,131 +1,208 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="@dimen/activity_top_margin"
-    android:orientation="vertical" >
-    
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="5dip"
-        android:text="@string/select_send_type_title" />
-        
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_top_margin"
-        android:layout_gravity="left" >
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp">
 
         <TextView
+            android:id="@+id/tvTips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="2dip"
-            android:text="@string/select_send_type" />
-        
-        <Spinner android:id="@+id/spinnerSendType"
+            android:layout_alignParentLeft="true"
+            android:text="@string/select_send_type_title" />
+
+        <LinearLayout
+            android:id="@+id/llSendType"
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="4dip"
-            android:drawSelectorOnTop="true"
-            />
+            android:layout_below="@id/tvTips"
+            android:layout_marginTop="@dimen/activity_top_margin"
+            android:layout_alignParentLeft="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="2dip"
+                android:text="@string/select_send_type" />
+
+            <Spinner android:id="@+id/spinnerSendType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dip"
+                android:drawSelectorOnTop="true"
+                />
+
+            <CheckBox
+                android:id="@+id/switchSendType"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/switch_send_type" />
+
+        </LinearLayout>
 
         <CheckBox
-        android:id="@+id/switchSendType"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/switch_send_type" />
-        
-    </LinearLayout>
-       
-    <CheckBox
-        android:id="@+id/notify"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_top_margin"
-        android:visibility="gone"
-        android:text="@string/notify" />
+            android:id="@+id/notify"
+            android:layout_below="@id/llSendType"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_top_margin"
+            android:layout_alignParentLeft="true"
+            android:visibility="gone"
+            android:text="@string/notify" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:layout_gravity="left" >
-        
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"        
-        android:text="@string/maxtime" />
-    
-    <EditText 
-        android:id="@+id/editopentime"
-        android:layout_width="65dip"
-        android:layout_height="wrap_content"      
-         android:inputType="number"
-        />
-	</LinearLayout>
+        <LinearLayout
+            android:id="@+id/qmobile_layout"
+            android:layout_below="@id/llSendType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/activity_top_margin"
+            android:layout_alignParentLeft="true"
+            android:visibility="gone"
+            >
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_top_margin"
-        android:layout_gravity="left" >
-        
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/testtime" />
-    
-    <EditText 
-        android:id="@+id/spacetime"
-        android:layout_width="60dip"
-        android:layout_height="wrap_content"    
-        android:inputType="number"  
-        />
-	</LinearLayout>
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="@string/day_set_text" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/qmobile_server_number"/>
 
-    <Button
-        android:id="@+id/btnSave"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/save" />
-     <Button
-        android:id="@+id/btnclear"
-        android:layout_marginTop="@dimen/activity_top_margin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/clear" />
+            <EditText
+                android:id="@+id/server_number"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:inputType="number"/>
 
+        </LinearLayout>
 
-        <TextView
-        android:id="@+id/tvShowSendType"
-        android:layout_width="fill_parent"
-        android:layout_marginTop="30dip"
-        android:layout_height="wrap_content" />     
+        <LinearLayout
+            android:id="@+id/llOpenTime"
+            android:layout_below="@id/qmobile_layout"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_top_margin"
+            android:layout_alignParentLeft="true">
 
-        <TextView
-        android:id="@+id/tvShowOpenFile"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-        
-       <TextView
-        android:id="@+id/tvShowSendResult"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/maxtime" />
+
+            <EditText
+                android:id="@+id/editopentime"
+                android:layout_width="60dip"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:layout_marginRight="0dp"
+                android:gravity="center_horizontal"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llSpaceTime"
+            android:layout_below="@id/llOpenTime"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_top_margin"
+            android:layout_alignParentLeft="true">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="@string/testtime" />
+
+            <EditText
+                android:id="@+id/spacetime"
+                android:layout_width="60dip"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:layout_marginRight="0dp"
+                android:gravity="center_horizontal"
+                />
+        </LinearLayout>
 
         <TextView
-        android:id="@+id/tvShowVersion"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/version"
-        android:layout_gravity="bottom"/>
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="@string/day_set_text" />
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/daytime"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:inputType="number"
+            />
+
+        <LinearLayout
+            android:id="@+id/llButton"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llSpaceTime">
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save" />
+            <Button
+                android:id="@+id/btnclear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:text="@string/clear" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llResult"
+            android:layout_below="@id/llButton"
+            android:layout_marginTop="@dimen/activity_top_margin"
+            android:layout_alignParentLeft="true"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvShowSendType"
+                tools:text="send type: "
+                android:layout_width="fill_parent"
+                android:layout_marginTop="30dip"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvShowOpenFile"
+                android:layout_marginTop="@dimen/activity_top_margin"
+                tools:text="imei: "
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvShowSendResult"
+                android:layout_marginTop="@dimen/activity_top_margin"
+                tools:text="send result:"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvShowVersion"
+                android:layout_marginTop="@dimen/activity_top_margin"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                tools:text="version: "/>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</ScrollView>
