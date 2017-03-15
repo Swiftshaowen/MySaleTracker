@@ -247,7 +247,7 @@ public class SaleTrackerService extends Service {
 					case Contant.MSG_SEND_BY_NET:
 						Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() send type by NET  mMsgSendNum = "
 								+ mMsgSendNum);
-//						MsgSendMode = Contant.ACTION_SEND_BY_NET;
+						MsgSendMode = Contant.ACTION_SEND_BY_NET;
 						mIsSendOnNetConnected = true;
 						break;
 
@@ -261,7 +261,7 @@ public class SaleTrackerService extends Service {
 							Log.d(TAG,CLASS_NAME +
 									"SaleTrackerReceiver() MSG_SEND_BY_NET_AND_SMS--net  mMsgSendNum = "
 											+ mMsgSendNum);
-//							MsgSendMode = Contant.ACTION_SEND_BY_NET;
+							MsgSendMode = Contant.ACTION_SEND_BY_NET;
 							mIsSendOnNetConnected = true;
 						}
 						break;
@@ -274,6 +274,9 @@ public class SaleTrackerService extends Service {
 
 				Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() MsgSendMode = " + MsgSendMode);
 				if (MsgSendMode != -1) {
+					if (MessageHandler.hasMessages(Contant.ACTION_SEND_BY_NET)) {
+						MessageHandler.removeMessages(Contant.ACTION_SEND_BY_NET);
+					}
 					MessageHandler.obtainMessage(MsgSendMode).sendToTarget();
 				}
 			} else if (intent.getAction().equals(Contant.ACTION_SMS_SEND)) {
@@ -338,6 +341,7 @@ public class SaleTrackerService extends Service {
 					Log.d(TAG, CLASS_NAME + "handleMessage() sended by net and  return  =" + val);
 					if (val) {
 						mIsSendSuccess = true;
+						mIsSendOnNetConnected = false;
 						mStciSP.writeSendedResult(val);
 
 						//add send content to tme wap address
@@ -705,6 +709,9 @@ public class SaleTrackerService extends Service {
 				boolean bMobile = checkNetworkConnection(context);//// TODO: 17-3-13
 				if (mIsSendOnNetConnected && bMobile && !mIsSendSuccess) {
 					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver()  net was connected and start to send ");
+					if (MessageHandler.hasMessages(Contant.ACTION_SEND_BY_NET)) {
+						MessageHandler.removeMessages(Contant.ACTION_SEND_BY_NET);
+					}
 					MessageHandler.obtainMessage(Contant.ACTION_SEND_BY_NET).sendToTarget();
 				} else {
 					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver()  net was connected");
@@ -725,9 +732,10 @@ public class SaleTrackerService extends Service {
 				+ " mobile.getTypeName="+ mobile.getTypeName());
 
 		// 只考虑连接数据网络的情况
-		if(mobile.getState() == NetworkInfo.State.CONNECTED)  //getState()方法是查询是否连接了数据网络
+		if (mobile.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
 			return true;
-		else
+		} else {
+		}
 			return false;
 	}
 }

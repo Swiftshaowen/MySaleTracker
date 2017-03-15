@@ -81,7 +81,7 @@ public class SaleTrackerActivity extends Activity {
 		// get version name
 		try {
 			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			mVersion = "Version: SUGAR_"+packageInfo.versionName;
+			mVersion = "Version: "+packageInfo.versionName;
 			Log.d(TAG, CLASS_NAME + " onCreate: mVersion = " + mVersion);
 		} catch (PackageManager.NameNotFoundException e) {
 			// TODO Auto-generated catch block
