@@ -503,6 +503,12 @@ public class SaleTrackerService extends Service {
 	}
 
 	public boolean isNetworkAvailable() {
+		// Add for SUGAR INLINE
+		// Only mobile connection allowed
+		if (!checkNetworkConnection(mContext)) {
+			return false;
+		}
+
 		ConnectivityManager connectivity = (ConnectivityManager) mContext
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		if (connectivity == null) {

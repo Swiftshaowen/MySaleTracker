@@ -5,8 +5,8 @@ package com.ape.saletracker;
  */
 public class Contant {
     public static String DEFAULT_CLIENT_NO = "0000001000";
-    public static int START_TIME = 180;
-    public static int SPACE_TIME = 60;
+    public static int START_TIME = 30;
+    public static int SPACE_TIME = 30;
     public static int DAY_TIME = 24*60;
     public static String SERVER_NUMBER = "8646";
 
