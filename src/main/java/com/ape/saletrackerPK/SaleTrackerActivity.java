@@ -1,4 +1,4 @@
-package com.ape.saletracker;
+package com.ape.saletrackerPK;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -81,7 +81,7 @@ public class SaleTrackerActivity extends Activity {
 		// get version name
 		try {
 			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			mVersion = "Version: "+packageInfo.versionName;
+			mVersion = "Version: QMobile"+packageInfo.versionName;
 			Log.d(TAG, CLASS_NAME + " onCreate: mVersion = " + mVersion);
 		} catch (PackageManager.NameNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -112,7 +112,7 @@ public class SaleTrackerActivity extends Activity {
 		mDayTime = (EditText)findViewById(R.id.daytime);
 
 		// weijie created. 17-3-13. Add for QMobile
-		/*LinearLayout qmobileLayout = (LinearLayout) findViewById(R.id.qmobile_layout);
+		LinearLayout qmobileLayout = (LinearLayout) findViewById(R.id.qmobile_layout);
 		mSendTypeLayout = (LinearLayout) findViewById(R.id.llSendType);
 		mServerNumber = (EditText) findViewById(R.id.server_number);
 		if (SaleTrackerUti.isQMobile()) {
@@ -120,7 +120,7 @@ public class SaleTrackerActivity extends Activity {
 			qmobileLayout.setVisibility(View.VISIBLE);
 			mSendTypeLayout.setVisibility(View.GONE);
 			ed.putInt(Contant.KEY_SELECT_SEND_TYPE, Contant.ACTION_SEND_BY_SMS);
-		}*/
+		}
 
 		mNotify = (CheckBox)findViewById(R.id.notify);
 		mNotify.setChecked(pre.getBoolean(Contant.KEY_NOTIFY, getResources().getBoolean(R.bool.dialog_notify)));
@@ -305,9 +305,9 @@ public class SaleTrackerActivity extends Activity {
 			setResutTextView.setText("Send result1 : " + mStrSendResult + "    result2:  No");
 		}
 
-		/*if (SaleTrackerUti.isQMobile()) {
+		if (SaleTrackerUti.isQMobile()) {
 			setResutTextView.setText("Send result1 : " + mStrSendResult);
-		}*/
+		}
 	}
 
 	public BroadcastReceiver refreshReceiver = new BroadcastReceiver() {

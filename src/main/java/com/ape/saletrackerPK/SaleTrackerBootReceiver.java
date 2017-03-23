@@ -1,4 +1,4 @@
-package com.ape.saletracker;
+package com.ape.saletrackerPK;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;

@@ -1,22 +1,12 @@
-package com.ape.saletracker;
+package com.ape.saletrackerPK;
 
 import android.content.Context;
-import android.os.Environment;
 import android.os.SystemProperties;
-import android.util.Config;
 import android.util.Log;
-import android.util.Xml;
 
 import com.ape.util.ApeConfigParser;
 
-import org.xmlpull.v1.XmlPullParser;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 /**

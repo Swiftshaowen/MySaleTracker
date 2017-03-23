@@ -1,4 +1,4 @@
-package com.ape.saletracker;
+package com.ape.saletrackerPK;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -20,7 +20,6 @@ import android.os.SystemProperties;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
-import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -287,9 +286,7 @@ public class SaleTrackerService extends Service {
 						case Activity.RESULT_OK:
 							Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() SMS is send OK ");
 							//add send content to tme wap address
-							mDefaultSendType = Contant.MSG_SEND_BY_NET;
-							mDefaultSendTypeTmp = Contant.MSG_SEND_BY_NET;
-							mHosturl = mTmeHosturl;
+
 
 							if(mSwitchSendType)//cancel switch checkbox test , will send by net
 							{
@@ -300,8 +297,16 @@ public class SaleTrackerService extends Service {
 								Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() only for test -----open test send type switch  :   "
 										+ mDefaultSendType);
 							}
+							mIsSendSuccess = true;
 							mStciSP.writeSendedResult(true);
-                            refreshPanelStatus();
+
+							//add send content to tme wap address
+							mStciSP.writeConfigForTmeWapAddr(true);
+
+							// refresh SaleTrackerActivity panel
+							refreshPanelStatus();
+
+							SaleTrackerService.this.stopSelf();
 							break;
 
 						default:
@@ -581,14 +586,14 @@ public class SaleTrackerService extends Service {
 		}*/
 
 		// weijie created. 17-3-13. Add for QMobile
-		/*if (SaleTrackerUti.isQMobile()) {
+		if (SaleTrackerUti.isQMobile()) {
 			mStrPhoneNo = mContext.getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE)
 					.getString(Contant.KEY_SERVER_NUMBER, Contant.SERVER_NUMBER);
 
 		} else {
 			mStrPhoneNo = NUM_SMS;
-		}*/
-		mStrPhoneNo = NUM_SMS;
+		}
+//		mStrPhoneNo = NUM_SMS;
 		Log.d(TAG, CLASS_NAME + "setDestNum() =" + mStrPhoneNo);
 	}
 
@@ -612,23 +617,12 @@ public class SaleTrackerService extends Service {
 		if(DEFAULT_VALUE.equals(mStrModel) || "".equals(mStrModel))
 		{
 			// weijie created. 17-3-3. Modify for QMobile
-			/*if (SaleTrackerUti.isQMobile()) {
+			if (SaleTrackerUti.isQMobile()) {
 				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
 				PRODUCT_NO.append(model);
 			} else {
 				PRODUCT_NO.append(Build.MODEL);
-			}*/
-			// weijie created. 17-3-23. Modify for QMobile. delete QMobile prefix. start
-			if (SaleTrackerUti.isQMobile()) {
-				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
-				if (model.startsWith("QMobile")) {
-					String QMobile = "QMobile ";
-					PRODUCT_NO.append(model.substring(QMobile.length()));
-				}
-			} else {
-				PRODUCT_NO.append(Build.MODEL);
 			}
-			// weijie created. 17-3-23. Modify for QMobile. delete QMobile prefix. end
 		}
 		else
 		{
@@ -662,14 +656,13 @@ public class SaleTrackerService extends Service {
 		SOFTWARE_NO.append(customVersion);
 
 		// weijie created. 17-3-8. Modify for QMbile
-		/*if (SaleTrackerUti.isQMobile()) {
+		if (SaleTrackerUti.isQMobile()) {
 			smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
 		} else {
 			smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
 					.append(","+SOFTWARE_NO).append(","+SN_NO);
-		}*/
-		smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
-				.append(","+SOFTWARE_NO).append(","+SN_NO);
+		}
+
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
 		return smsContent.toString();
