@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class SaleTrackerActivity extends Activity {
 	
-	private static final String TAG = "SaleTracker";
+	private static final String TAG = "SaleTrackerPK";
 	private static final String CLASS_NAME = "SaleTrackerActivity---->";
 	private static String mVersion;
 	private static String mStrSendResult = "unknown";
@@ -51,7 +51,7 @@ public class SaleTrackerActivity extends Activity {
 	private int DEFAULT_START_TIME = Contant.START_TIME;
 
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
-	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_NET;
+	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_SMS;
 	private String DEFAULT_SERVER_NUMBER = Contant.SERVER_NUMBER;
 	private static final String CONFIG_SEND_TYPE = "send_type";
 
@@ -81,7 +81,7 @@ public class SaleTrackerActivity extends Activity {
 		// get version name
 		try {
 			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			mVersion = "Version: QMobile"+packageInfo.versionName;
+			mVersion = "Version: QMobile_"+packageInfo.versionName;
 			Log.d(TAG, CLASS_NAME + " onCreate: mVersion = " + mVersion);
 		} catch (PackageManager.NameNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -119,7 +119,7 @@ public class SaleTrackerActivity extends Activity {
 			mTips.setVisibility(View.GONE);
 			qmobileLayout.setVisibility(View.VISIBLE);
 			mSendTypeLayout.setVisibility(View.GONE);
-			ed.putInt(Contant.KEY_SELECT_SEND_TYPE, Contant.ACTION_SEND_BY_SMS);
+			ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
 		}
 
 		mNotify = (CheckBox)findViewById(R.id.notify);

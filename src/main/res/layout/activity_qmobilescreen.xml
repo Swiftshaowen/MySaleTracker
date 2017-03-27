@@ -9,10 +9,20 @@
     tools:context=".WIKOSTSScreen" >
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="33dp"
+        android:textAppearance="?android:attr/textAppearance"
+        android:text="@string/qmobile_sts_title"/>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_below="@id/textTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
         android:textAppearance="?android:attr/textAppearance"
         android:text="@string/qmobile_sts_text"/>
 

@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
-	private static final String TAG = "SaleTracker";
+	private static final String TAG = "SaleTrackerPK";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
 	private static final String VERSION_NUMBER = "20170323";
 	private static final String CONFIG_START_TIME = "start_time";

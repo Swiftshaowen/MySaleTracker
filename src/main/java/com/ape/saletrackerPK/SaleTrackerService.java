@@ -32,7 +32,7 @@ import java.util.Map;
 //import com.wrapper.stk.HideMethod.TelephonyManager;
 
 public class SaleTrackerService extends Service {
-	private static final String TAG = "SaleTracker";
+	private static final String TAG = "SaleTrackerPK";
 	private static final String CLASS_NAME = "SaleTrackerService---->";
 
     private static final String DEFAULT_VALUE = "defaultSet";
@@ -69,7 +69,7 @@ public class SaleTrackerService extends Service {
 	private static SaleTrackerConfigSP mStciSP = new SaleTrackerConfigSP();
 	private final BroadcastReceiver mSaleTrackerReceiver = new SaleTrackerReceiver();
 	private final BroadcastReceiver mStsAirplanReceiver = new StsAirplanReceiver();
-	private final BroadcastReceiver mNetConnectReceiver = new StsNetConnectReceiver();
+//	private final BroadcastReceiver mNetConnectReceiver = new StsNetConnectReceiver();
 
 	private static TelephonyManager mTm;
 
@@ -106,7 +106,7 @@ public class SaleTrackerService extends Service {
 			registerReceiver(mSaleTrackerReceiver, new IntentFilter(Contant.STS_REFRESH));
 			registerReceiver(mSaleTrackerReceiver, new IntentFilter(Contant.ACTION_SMS_SEND));
 			registerReceiver(mSaleTrackerReceiver, new IntentFilter(Contant.ACTION_SMS_DELIVERED));
-			registerReceiver(mNetConnectReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+//			registerReceiver(mNetConnectReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		}
 	}
 
@@ -145,7 +145,7 @@ public class SaleTrackerService extends Service {
         try {
             unregisterReceiver(mSaleTrackerReceiver);
 			unregisterReceiver(mStsAirplanReceiver);
-			unregisterReceiver(mNetConnectReceiver);
+//			unregisterReceiver(mNetConnectReceiver);
 		} catch (Exception e) {
 			Log.e(TAG, CLASS_NAME+"onDestroy() Exception" + e.getMessage());
 		}
@@ -176,8 +176,8 @@ public class SaleTrackerService extends Service {
 					try {
 						SaleTrackerService.this
 								.unregisterReceiver(mSaleTrackerReceiver);
-						SaleTrackerService.this
-								.unregisterReceiver(mNetConnectReceiver);
+//						SaleTrackerService.this
+//								.unregisterReceiver(mNetConnectReceiver);
 					} catch (IllegalArgumentException e) {
 						android.util.Log.e(TAG, CLASS_NAME+"StsAirplanReceiver()   registerReceiverSafe(), FAIL!");
 					}
@@ -194,8 +194,8 @@ public class SaleTrackerService extends Service {
 					SaleTrackerService.this.registerReceiver(
 							mSaleTrackerReceiver, new IntentFilter(
                                     Contant.ACTION_SMS_DELIVERED));
-					registerReceiver(mNetConnectReceiver, new IntentFilter(
-							ConnectivityManager.CONNECTIVITY_ACTION));
+//					registerReceiver(mNetConnectReceiver, new IntentFilter(
+//							ConnectivityManager.CONNECTIVITY_ACTION));
 				}
 			}
 		}
@@ -618,7 +618,7 @@ public class SaleTrackerService extends Service {
 		{
 			// weijie created. 17-3-3. Modify for QMobile
 			if (SaleTrackerUti.isQMobile()) {
-				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
+				String model = SystemProperties.get("ro.product.model.sts", Build.MODEL);
 				PRODUCT_NO.append(model);
 			} else {
 				PRODUCT_NO.append(Build.MODEL);
