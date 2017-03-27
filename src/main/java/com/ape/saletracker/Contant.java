@@ -31,7 +31,6 @@ public class Contant {
     public static final String KEY_NOTIFY = "KEY_NOTIFY";
     public static final String KEY_SWITCH_SENDTYPE = "KEY_SWITCH_SENDTYPE";
     public static final String KEY_SELECT_SEND_TYPE = "KEY_SELECT_SEND_TYPE";
-    public static final String KEY_SERVER_NUMBER = "8646";
 
     public static final String STS_REFRESH = "STS_REFRESH";
     public static final String STSDATA_CONFIG = "STSDATA_CONFIG";

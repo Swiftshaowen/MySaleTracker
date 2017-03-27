@@ -36,11 +36,9 @@ public class SaleTrackerActivity extends Activity {
 	private static String mVersion;
 	private static String mStrSendResult = "unknown";
 
-	private LinearLayout mSendTypeLayout;
 	private EditText mOpenTime;
 	private EditText mSpaceTime;
 	private EditText mDayTime;
-	private EditText mServerNumber;
 	private CheckBox mNotify;
 	private CheckBox mSwitchWhole;
 	private Spinner mSpinner;
@@ -52,7 +50,6 @@ public class SaleTrackerActivity extends Activity {
 
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
 	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_NET;
-	private String DEFAULT_SERVER_NUMBER = Contant.SERVER_NUMBER;
 	private static final String CONFIG_SEND_TYPE = "send_type";
 
 	private static final String CONFIG_START_TIME = "start_time";
@@ -110,17 +107,6 @@ public class SaleTrackerActivity extends Activity {
 		mOpenTime = (EditText)findViewById(R.id.editopentime);
 		mSpaceTime = (EditText)findViewById(R.id.spacetime);
 		mDayTime = (EditText)findViewById(R.id.daytime);
-
-		// weijie created. 17-3-13. Add for QMobile
-		/*LinearLayout qmobileLayout = (LinearLayout) findViewById(R.id.qmobile_layout);
-		mSendTypeLayout = (LinearLayout) findViewById(R.id.llSendType);
-		mServerNumber = (EditText) findViewById(R.id.server_number);
-		if (SaleTrackerUti.isQMobile()) {
-			mTips.setVisibility(View.GONE);
-			qmobileLayout.setVisibility(View.VISIBLE);
-			mSendTypeLayout.setVisibility(View.GONE);
-			ed.putInt(Contant.KEY_SELECT_SEND_TYPE, Contant.ACTION_SEND_BY_SMS);
-		}*/
 
 		mNotify = (CheckBox)findViewById(R.id.notify);
 		mNotify.setChecked(pre.getBoolean(Contant.KEY_NOTIFY, getResources().getBoolean(R.bool.dialog_notify)));
@@ -192,7 +178,6 @@ public class SaleTrackerActivity extends Activity {
 				else{
 					ed.putInt(Contant.KEY_OPEN_TIME, Integer.parseInt(mOpenTime.getText().toString(), 10)); //mOpenTime.getText().toString());
 					ed.putInt(Contant.KEY_SPACE_TIME, Integer.parseInt(mSpaceTime.getText().toString(),10));
-					ed.putString(Contant.KEY_SERVER_NUMBER, mServerNumber.getText().toString());
 					ed.commit();
 					showToast("Save successful" );
 				}
@@ -254,9 +239,6 @@ public class SaleTrackerActivity extends Activity {
 				DEFAULT_START_TIME));
 		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
 				DEFAULT_SPACE_TIME));
-		mServerNumber.setText(""+pre.getString(Contant.KEY_SERVER_NUMBER,
-				DEFAULT_SERVER_NUMBER));
-
 
 		/*******************SHOW SEND TYPE *****************/
 		String strTmp;
@@ -304,10 +286,6 @@ public class SaleTrackerActivity extends Activity {
 		else{
 			setResutTextView.setText("Send result1 : " + mStrSendResult + "    result2:  No");
 		}
-
-		/*if (SaleTrackerUti.isQMobile()) {
-			setResutTextView.setText("Send result1 : " + mStrSendResult);
-		}*/
 	}
 
 	public BroadcastReceiver refreshReceiver = new BroadcastReceiver() {

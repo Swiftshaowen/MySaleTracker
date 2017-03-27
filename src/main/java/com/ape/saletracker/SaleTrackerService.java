@@ -227,7 +227,7 @@ public class SaleTrackerService extends Service {
 				// for test send type only
 				mSwitchSendType = pre.getBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
 				if (mSwitchSendType == true) {
-					mDefaultSendType = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, 0);
+					mDefaultSendType = pre.getInt(Contant.KEY_SELECT_SEND_TYPE, Contant.ACTION_SEND_BY_NET);
 					Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() only for test ----- send type switch : "
 							+ mDefaultSendType);
 				}
@@ -611,19 +611,13 @@ public class SaleTrackerService extends Service {
 		StringBuffer PRODUCT_NO = new StringBuffer();
 		if(DEFAULT_VALUE.equals(mStrModel) || "".equals(mStrModel))
 		{
-			// weijie created. 17-3-3. Modify for QMobile
-			/*if (SaleTrackerUti.isQMobile()) {
-				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
-				PRODUCT_NO.append(model);
-			} else {
-				PRODUCT_NO.append(Build.MODEL);
-			}*/
-			// weijie created. 17-3-23. Modify for QMobile. delete QMobile prefix. start
 			if (SaleTrackerUti.isQMobile()) {
 				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
-				if (model.startsWith("QMobile")) {
+				if (model.startsWith("QMobile ")) {
 					String QMobile = "QMobile ";
 					PRODUCT_NO.append(model.substring(QMobile.length()));
+				} else {
+					PRODUCT_NO.append(model);
 				}
 			} else {
 				PRODUCT_NO.append(Build.MODEL);
@@ -661,13 +655,6 @@ public class SaleTrackerService extends Service {
 		}
 		SOFTWARE_NO.append(customVersion);
 
-		// weijie created. 17-3-8. Modify for QMbile
-		/*if (SaleTrackerUti.isQMobile()) {
-			smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
-		} else {
-			smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
-					.append(","+SOFTWARE_NO).append(","+SN_NO);
-		}*/
 		smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
 				.append(","+SOFTWARE_NO).append(","+SN_NO);
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());

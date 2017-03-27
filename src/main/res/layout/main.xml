@@ -6,8 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="5dp">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/tvTips"
@@ -24,23 +23,24 @@
             android:layout_below="@id/tvTips"
             android:layout_marginTop="@dimen/activity_top_margin"
             android:layout_alignParentLeft="true">
-
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="2dip"
                 android:text="@string/select_send_type" />
 
             <Spinner android:id="@+id/spinnerSendType"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="4dip"
+                android:layout_marginRight="2dip"
                 android:drawSelectorOnTop="true"
                 />
 
             <CheckBox
                 android:id="@+id/switchSendType"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/switch_send_type" />
 
@@ -56,34 +56,10 @@
             android:visibility="gone"
             android:text="@string/notify" />
 
-        <LinearLayout
-            android:id="@+id/qmobile_layout"
-            android:layout_below="@id/llSendType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="@dimen/activity_top_margin"
-            android:layout_alignParentLeft="true"
-            android:visibility="gone"
-            >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/qmobile_server_number"/>
-
-            <EditText
-                android:id="@+id/server_number"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:inputType="number"/>
-
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/llOpenTime"
-            android:layout_below="@id/qmobile_layout"
+            android:layout_below="@id/llSendType"
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
