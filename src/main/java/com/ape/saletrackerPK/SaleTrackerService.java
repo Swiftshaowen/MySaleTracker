@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -17,6 +18,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
@@ -27,6 +30,8 @@ import com.wrapper.stk.HideMethod.SubscriptionManager;
 
 import java.util.List;
 import java.util.Map;
+
+//import static android.provider.Settings.Secure.USER_SETUP_COMPLETE;
 
 //import com.wrapper.stk.HideMethod;
 //import com.wrapper.stk.HideMethod.TelephonyManager;
@@ -99,6 +104,8 @@ public class SaleTrackerService extends Service {
 
 		pickCountryConfigs();
 
+//		resetUserSetupObserver(mContext);
+
 		registerReceiver(mStsAirplanReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
 		if(!airplaneModeOn)
 		{
@@ -145,6 +152,7 @@ public class SaleTrackerService extends Service {
         try {
             unregisterReceiver(mSaleTrackerReceiver);
 			unregisterReceiver(mStsAirplanReceiver);
+//			mContext.getContentResolver().unregisterContentObserver(mUserSetupObserver);
 //			unregisterReceiver(mNetConnectReceiver);
 		} catch (Exception e) {
 			Log.e(TAG, CLASS_NAME+"onDestroy() Exception" + e.getMessage());
@@ -234,6 +242,7 @@ public class SaleTrackerService extends Service {
 				int MsgSendMode = -1;
 				Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() mDefaultSendType= " + mDefaultSendType);
 
+				mDefaultSendType = Contant.MSG_SEND_BY_SMS;
 				switch (mDefaultSendType) {
 					case Contant.MSG_SEND_BY_SMS:
 						Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() send type by SMS  mMsgSendNum = "
@@ -267,7 +276,7 @@ public class SaleTrackerService extends Service {
 
 				}
 
-				popNotifyWindow(context);
+//				popNotifyWindow(context);
 
 				mStciSP.writeSendedNumber(++mMsgSendNum);
 
@@ -480,14 +489,11 @@ public class SaleTrackerService extends Service {
 
 
 	private void popNotifyWindow(Context context){
-
-		if ((mNotifyFromTestActivity || mIsNeedNoticePop) && (mMsgSendNum == 0)) {
-			Log.d(TAG, CLASS_NAME + "popNotifyWindow()  dialog start");
-			Intent Dialog = new Intent(context, WIKOSTSScreen.class);
-			Dialog.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(Dialog);
-			Log.d(TAG, CLASS_NAME + "popNotifyWindow()  dialog finish");
-		}
+		Log.d(TAG, CLASS_NAME + "popNotifyWindow()  dialog start");
+		Intent Dialog = new Intent(context, WIKOSTSScreen.class);
+		Dialog.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(Dialog);
+		Log.d(TAG, CLASS_NAME + "popNotifyWindow()  dialog finish");
 	}
 
 	private boolean isSmsAvailable() {
@@ -586,13 +592,8 @@ public class SaleTrackerService extends Service {
 		}*/
 
 		// weijie created. 17-3-13. Add for QMobile
-		if (SaleTrackerUti.isQMobile()) {
-			mStrPhoneNo = mContext.getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE)
-					.getString(Contant.KEY_SERVER_NUMBER, Contant.SERVER_NUMBER);
-
-		} else {
-			mStrPhoneNo = NUM_SMS;
-		}
+		mStrPhoneNo = mContext.getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE)
+				.getString(Contant.KEY_SERVER_NUMBER, Contant.SERVER_NUMBER);
 //		mStrPhoneNo = NUM_SMS;
 		Log.d(TAG, CLASS_NAME + "setDestNum() =" + mStrPhoneNo);
 	}
@@ -617,12 +618,8 @@ public class SaleTrackerService extends Service {
 		if(DEFAULT_VALUE.equals(mStrModel) || "".equals(mStrModel))
 		{
 			// weijie created. 17-3-3. Modify for QMobile
-			if (SaleTrackerUti.isQMobile()) {
-				String model = SystemProperties.get("ro.product.model.sts", Build.MODEL);
-				PRODUCT_NO.append(model);
-			} else {
-				PRODUCT_NO.append(Build.MODEL);
-			}
+			String model = SystemProperties.get("ro.product.model.sts", Build.MODEL);
+			PRODUCT_NO.append(model);
 		}
 		else
 		{
@@ -656,12 +653,7 @@ public class SaleTrackerService extends Service {
 		SOFTWARE_NO.append(customVersion);
 
 		// weijie created. 17-3-8. Modify for QMbile
-		if (SaleTrackerUti.isQMobile()) {
-			smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
-		} else {
-			smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
-					.append(","+SOFTWARE_NO).append(","+SN_NO);
-		}
+		smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
 
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
@@ -745,4 +737,51 @@ public class SaleTrackerService extends Service {
 		}
 			return false;
 	}
+
+	// ensure quick settings is disabled until the current user makes it through the setup wizard
+	private boolean mUserSetup = false;
+	/*private ContentObserver mUserSetupObserver = new ContentObserver(new Handler()) {
+		@Override
+		public void onChange(boolean selfChange) {
+			Log.d(TAG, CLASS_NAME + "*************USER_SETUP_COMPLETE  onChange**********");
+
+			final boolean userSetup = (0 != Settings.System.getInt(
+					mContext.getContentResolver(),
+					Settings.Secure.USER_SETUP_COMPLETE,
+					0 *//*default *//*));
+			if (userSetup){
+				//delay 9 seconds
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						SharedPreferences.Editor ed ;
+						SharedPreferences pre = mContext.getSharedPreferences(Contant.STSDATA_CONFIG, Context.MODE_PRIVATE);
+
+						boolean notify = pre.getBoolean(Contant.STSDATA_CONFIG, false);
+						Log.d(TAG, CLASS_NAME + "*************start popup dialog notify =" + notify);
+						if(!notify)
+						{
+							ed = pre.edit();
+							Log.d(TAG, CLASS_NAME + "*************start popup dialog start");
+							popNotifyWindow(mContext);
+							ed.putBoolean(Contant.STSDATA_CONFIG, true);
+							ed.commit();
+							Log.d(TAG, CLASS_NAME + "*************start popup dialog finish111");
+						}
+					}
+				}, 9000);
+				Log.d(TAG, CLASS_NAME + "*************start popup dialog finish222");
+			}
+		}
+	};
+
+	private void resetUserSetupObserver(Context context ) {
+		Log.d(TAG, CLASS_NAME + "*************resetUserSetupObserver**********");
+
+		context.getContentResolver().unregisterContentObserver(mUserSetupObserver);
+		mUserSetupObserver.onChange(false);
+		context.getContentResolver().registerContentObserver(
+				Settings.Secure.getUriFor(Settings.Secure.USER_SETUP_COMPLETE), true,
+				mUserSetupObserver);
+	}*/
 }

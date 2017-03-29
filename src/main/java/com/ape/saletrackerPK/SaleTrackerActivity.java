@@ -115,12 +115,10 @@ public class SaleTrackerActivity extends Activity {
 		LinearLayout qmobileLayout = (LinearLayout) findViewById(R.id.qmobile_layout);
 		mSendTypeLayout = (LinearLayout) findViewById(R.id.llSendType);
 		mServerNumber = (EditText) findViewById(R.id.server_number);
-		if (SaleTrackerUti.isQMobile()) {
-			mTips.setVisibility(View.GONE);
-			qmobileLayout.setVisibility(View.VISIBLE);
-			mSendTypeLayout.setVisibility(View.GONE);
-			ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
-		}
+		mTips.setVisibility(View.GONE);
+		qmobileLayout.setVisibility(View.VISIBLE);
+		mSendTypeLayout.setVisibility(View.GONE);
+		ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
 
 		mNotify = (CheckBox)findViewById(R.id.notify);
 		mNotify.setChecked(pre.getBoolean(Contant.KEY_NOTIFY, getResources().getBoolean(R.bool.dialog_notify)));
@@ -179,7 +177,6 @@ public class SaleTrackerActivity extends Activity {
 		TextView showVersionTv = (TextView)findViewById(R.id.tvShowVersion);
 		showVersionTv.setText(mVersion);
 
-		Log.d(TAG, "onCreate: Button findViewById");
 		Button btSave = (Button)findViewById(R.id.btnSave);
 		btSave.setOnClickListener(new OnClickListener() {
 			@Override
@@ -305,9 +302,7 @@ public class SaleTrackerActivity extends Activity {
 			setResutTextView.setText("Send result1 : " + mStrSendResult + "    result2:  No");
 		}
 
-		if (SaleTrackerUti.isQMobile()) {
-			setResutTextView.setText("Send result1 : " + mStrSendResult);
-		}
+		setResutTextView.setText("Send result1 : " + mStrSendResult);
 	}
 
 	public BroadcastReceiver refreshReceiver = new BroadcastReceiver() {
