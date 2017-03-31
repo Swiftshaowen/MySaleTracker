@@ -53,10 +53,6 @@ public class SaleTrackerActivity extends Activity {
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
 	private int DEFAULT_SEND_TYPE = Contant.MSG_SEND_BY_SMS;
 	private String DEFAULT_SERVER_NUMBER = Contant.SERVER_NUMBER;
-	private static final String CONFIG_SEND_TYPE = "send_type";
-
-	private static final String CONFIG_START_TIME = "start_time";
-	private static final String CONFIG_SPACE_TIME = "space_time";
 	private static final String[] mStrings = {
         "sms", "net", "net and sms"
     };
@@ -76,7 +72,7 @@ public class SaleTrackerActivity extends Activity {
 
 		setContentView(R.layout.main);	
 		mContext = getApplicationContext();
-		stciSP.init(mContext);
+		stciSP = SaleTrackerConfigSP.init(mContext);
 
 		// get version name
 		try {
@@ -88,7 +84,6 @@ public class SaleTrackerActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		pickTimeConfigs();
 
 		init();
 
@@ -201,7 +196,6 @@ public class SaleTrackerActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, CLASS_NAME + "setOnClickListener");
-				stciSP.writeConfigForTmeWapAddr(false);
 				stciSP.writeSendedResult(false);
 				stciSP.writeSendedNumber(0);
 
@@ -288,7 +282,6 @@ public class SaleTrackerActivity extends Activity {
 
 		/*******************SHOW IMEI*****************/
 		boolean bSendToTme = false;
-		bSendToTme = stciSP.readConfigForTmeWapAddr();
 
 		showOpenFileTextView.setText ("IMEI1 :  " + HideMethod.TelephonyManager.getDefault().getDeviceId(0,mContext));
 
@@ -313,23 +306,5 @@ public class SaleTrackerActivity extends Activity {
 		}
 	};
 
-	private void pickTimeConfigs() {
-		Log.d(TAG, CLASS_NAME + "pickTimeConfigs: ");
-
-		Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(getApplicationContext());
-		if (configMap != null) {
-			DEFAULT_SEND_TYPE = Integer.parseInt(configMap.get(CONFIG_SEND_TYPE));
-			DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
-			DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
-
-			Log.w(TAG, CLASS_NAME + " pickCountryConfigs: "
-					+ "\n   DEFAULT_SEND_TYPE =" + DEFAULT_SEND_TYPE
-					+ "\n   DEFAULT_START_TIME =" + DEFAULT_START_TIME
-					+ "\n   DEFAULT_SPACE_TIME =" + DEFAULT_SPACE_TIME
-			);
-		} else {
-			Log.d(TAG, CLASS_NAME + " pickTimeConfigs: config doesn't exist");
-		}
-	}
 }
 

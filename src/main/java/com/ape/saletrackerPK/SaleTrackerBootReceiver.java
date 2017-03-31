@@ -10,12 +10,14 @@ import android.util.Log;
 
 import java.util.Map;
 
+import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
+
 
 public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "SaleTrackerPK";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
-	private static final String VERSION_NUMBER = "20170323";
+	private static final String VERSION_NUMBER = "20170331";
 	private static final String CONFIG_START_TIME = "start_time";
 	private static final String CONFIG_SPACE_TIME = "space_time";
 
@@ -24,30 +26,18 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 	private int DEFAULT_SPACE_TIME = Contant.SPACE_TIME;
 	private int DEFAULT_START_TIME = Contant.START_TIME;
 
-	private static SaleTrackerConfigSP mStciSP = new SaleTrackerConfigSP();
+	private static SaleTrackerConfigSP mStciSP;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-			Log.d(TAG, CLASS_NAME + "onReceive: ACTION_BOOT_COMPLETED ; VERSION_NUMBER = " + VERSION_NUMBER);
+		if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())
+				|| ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
+			Log.d(TAG, CLASS_NAME + "onReceive: " + intent.getAction() + "; VERSION_NUMBER = " + VERSION_NUMBER);
 			// init
-			mStciSP.init(context);
+			mStciSP = SaleTrackerConfigSP.init(context);
+			mSpaceTime = mStciSP.readSpaceTime();
+			mStartTime = mStciSP.readStartTime();
 
-			// read preferences from config.xml
-			Map<String, String> configMap = SaleTrackerUti.readSendParamFromXml(context);
-
-			if(configMap != null){
-				DEFAULT_SPACE_TIME = Integer.parseInt(configMap.get(CONFIG_SPACE_TIME));
-				DEFAULT_START_TIME = Integer.parseInt(configMap.get(CONFIG_START_TIME));
-				SharedPreferences pre = context.getSharedPreferences(Contant.STSDATA_CONFIG, Context.MODE_PRIVATE);
-				mSpaceTime = pre.getInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
-				mStartTime = pre.getInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME);
-				Log.d(TAG, CLASS_NAME + "onReceive: DEFAULT_SPACE_TIME = " + DEFAULT_SPACE_TIME
-						+ "; DEFAULT_START_TIME = " + DEFAULT_START_TIME);
-			}
-
-			// need to send to me by net?
-			boolean isSendedToTmeNet = mStciSP.readConfigForTmeWapAddr();
 			// msg has been sended?
 			boolean isSended = mStciSP.readSendedResult();
 			// sended number
@@ -65,9 +55,6 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
 			if (!isSended && isSendFlag) {
                 sendPendingIntent(context, Contant.SEND_TO_CUSTOM);
-			}else if(!isSendedToTmeNet && isSendFlag){
-                // add send content to tme wap address
-                sendPendingIntent(context, Contant.SEND_TO_TME);
 			}
 		}
 	}

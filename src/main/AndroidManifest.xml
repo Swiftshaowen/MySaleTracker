@@ -27,7 +27,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
             </intent-filter>
             <!--
             intent-filter>
@@ -58,8 +58,9 @@
         </service>
 
         <receiver android:name="com.ape.saletrackerPK.SaleTrackerBootReceiver" >
-            <intent-filter android:priority="100" >
+            <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
 

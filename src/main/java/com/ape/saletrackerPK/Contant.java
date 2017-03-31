@@ -4,15 +4,10 @@ package com.ape.saletrackerPK;
  * Created by android on 5/18/16.
  */
 public class Contant {
-    public static String DEFAULT_CLIENT_NO = "0000001000";
-    public static int START_TIME = 180;
-    public static int SPACE_TIME = 60;
-    public static int DAY_TIME = 24*60;
-    public static String SERVER_NUMBER = "8646";
-
-    public static final int STS_JNI = 1;
-    public static final int STS_NV = 2;
-    public static final int STS_SP = 3;
+    public static final String CLIENT_NO = "Z0010037";
+    public static final int START_TIME = 180;
+    public static final int SPACE_TIME = 60;
+    public static final String SERVER_NUMBER = "8646";
 
     public static final int MSG_SEND_BY_SMS = 0;
     public static final int MSG_SEND_BY_NET = 1;
@@ -48,4 +43,6 @@ public class Contant {
 
     public  static final String ACTION_REFRESH_PANEL = "ACTION_REFRESH_PANEL";
 
+    public static final String KEY_SENDED_SUCCESS = "KEY_SENDED_SUCCESS";
+    public static final String KEY_SENDED_NUMBER = "KEY_SENDED_NUMBER";
 }
