@@ -26,6 +26,7 @@ import android.util.Log;
 import com.wrapper.stk.HideMethod.SubscriptionManager;
 //import com.wrapper.stk.HideMethod.Settings;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -354,6 +355,36 @@ public class SaleTrackerService extends Service {
 
 
 	private void setDestNum() {
+
+		String sim_network, sim_operator;
+
+		String PLMNTest1= new String("46000");//China Mobile
+
+		String PLMNTest2= new String("46002");//China Mobile
+
+		String PLMNTest3= new String("46007");//China Mobile
+
+		String PLMNTest4= new String("46001");//China Unicom
+
+		List<String> operatorList = new ArrayList<>(4);
+		operatorList.add("46000");//China Mobile
+		operatorList.add("46002");//China Mobile
+		operatorList.add("46007");//China Mobile
+		operatorList.add("46001");//China Unicom
+
+		sim_network = mTm.getNetworkOperatorName();
+		sim_operator = mTm.getSimOperator();
+		String testServerNum = mStciSP.readServerNumber();
+
+
+		Log.d(TAG, CLASS_NAME + "setDestNum()  sim_network: " + sim_network + ";sim_operator :"
+				+ sim_operator);
+
+		String defServerNum = "15920026432";
+		if((operatorList.contains(sim_operator)) && (Contant.SERVER_NUMBER.equals(testServerNum))) {
+			mStciSP.writeServerNumber(defServerNum);
+		}
+
 		mStrPhoneNo = mStciSP.readServerNumber();
 		Log.d(TAG, CLASS_NAME + "setDestNum() =" + mStrPhoneNo);
 	}
