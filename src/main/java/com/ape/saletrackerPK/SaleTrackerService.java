@@ -17,9 +17,11 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.provider.Settings;
+import android.telephony.CellLocation;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -416,8 +418,15 @@ public class SaleTrackerService extends Service {
 		String customVersion = SystemProperties.get("ro.custom.build.version");
 		SOFTWARE_NO.append(customVersion);
 
+		// Cell ID
+		int CELL_ID = 0;
+		CellLocation cellLocation = mTm.getCellLocation();
+		if (cellLocation instanceof GsmCellLocation) {
+			CELL_ID = ((GsmCellLocation) cellLocation).getCid();
+		}
+
 		// weijie created. 17-3-8. Modify for QMbile
-		smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
+		smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK()).append(" " + CELL_ID);
 
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
