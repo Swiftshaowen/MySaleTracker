@@ -9,14 +9,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
+import android.telephony.CellLocation;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
@@ -73,6 +78,7 @@ public class SaleTrackerService extends Service {
 	private final BroadcastReceiver mNetConnectReceiver = new StsNetConnectReceiver();
 
 	private static TelephonyManager mTm;
+	private static LocationManager mLocationManager;
 
 	private static final String CONFIG_CLIENT_NO = "client_no";
 	private static final String CONFIG_SEND_TYPE = "send_type";
@@ -93,6 +99,7 @@ public class SaleTrackerService extends Service {
 		mMsgSendNum = mStciSP.readSendedNumber();
 		try {
 			mTm = (TelephonyManager)mContext.getSystemService(Context.TELEPHONY_SERVICE);
+			mLocationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
 		} catch (Exception e) {
 			Log.d(TAG, CLASS_NAME + "init() ********error******** TelephonyManager.getDefault() = null ********error********");
 			e.printStackTrace();
@@ -629,19 +636,9 @@ public class SaleTrackerService extends Service {
 			PRODUCT_NO.append(mStrModel);
 		}
 
-		/*// Cell id
-		StringBuffer CELL_ID = new StringBuffer(",CID:");
-		GsmCellLocation loc = (GsmCellLocation) mTm.getCellLocation();
-		Log.d(TAG, CLASS_NAME+"setSendContent()  loc= " + loc);
-
-		int cellId = 0;
-		if (loc != null) {
-			cellId = loc.getCid();
-		}
-		if (cellId == -1) {
-			cellId = 0;
-		}
-		CELL_ID.append(Integer.toHexString(cellId).toUpperCase());*/
+		SCell cell = getCellInfo();
+		String LAC = Integer.toString(cell.LAC);
+		String CID = Integer.toString(cell.CID);
 
 		// add sn no 20150703
 		String SN_NO = Build.SERIAL;
@@ -656,12 +653,8 @@ public class SaleTrackerService extends Service {
 		SOFTWARE_NO.append(customVersion);
 
 		// weijie created. 17-3-8. Modify for QMbile
-		if (SaleTrackerUti.isQMobile()) {
-			smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK());
-		} else {
-			smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
-					.append(","+SOFTWARE_NO).append(","+SN_NO);
-		}
+		smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
+				.append(","+SOFTWARE_NO).append(","+SN_NO).append(",LAC:"+LAC).append(",CID:"+CID);
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
 		return smsContent.toString();
@@ -714,13 +707,13 @@ public class SaleTrackerService extends Service {
 			if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
 				boolean bMobile = checkNetworkConnection(context);//// TODO: 17-3-13
 				if (mIsSendOnNetConnected && bMobile && !mIsSendSuccess) {
-					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver()  net was connected and start to send ");
+					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver(): net was connected and start to send ");
 					if (MessageHandler.hasMessages(Contant.ACTION_SEND_BY_NET)) {
 						MessageHandler.removeMessages(Contant.ACTION_SEND_BY_NET);
 					}
 					MessageHandler.obtainMessage(Contant.ACTION_SEND_BY_NET).sendToTarget();
 				} else {
-					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver()  net was connected");
+					Log.d(TAG, CLASS_NAME + " StsNetConnectReceiver(): stop to send");
 				}
 			}
 		}
@@ -737,11 +730,95 @@ public class SaleTrackerService extends Service {
 				+ " mobile.getState()="+ mobile.getState()
 				+ " mobile.getTypeName="+ mobile.getTypeName());
 
-		// 只考虑连接数据网络的情况
-		if (mobile.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
+		if (mobile.getState() == NetworkInfo.State.CONNECTED
+				|| wifi.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
 			return true;
 		} else {
-		}
 			return false;
+		}
 	}
+
+	private double mLatitude, mLongitude;
+	private LocationListener mLocationListener = new LocationListener() {
+		@Override
+		public void onLocationChanged(Location location) {
+			//得到纬度
+			mLatitude = location.getLatitude();
+			//得到经度
+			mLongitude = location.getLongitude();
+			Log.d(TAG, CLASS_NAME + " onLocationChanged: mLatitude = " + mLatitude + "; mLongitude = " + mLongitude);
+		}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {
+
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {
+
+		}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+
+		}
+	};
+	/**
+	 * @param
+	 * @return
+	 *
+	 */
+	void getLocation(){
+		// location
+		Log.d(TAG, CLASS_NAME+" getLocation: ");
+		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			try {
+				Log.d(TAG, CLASS_NAME+" getLocation: NETWORK_PROVIDER");
+				mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 1, mLocationListener);
+			} catch (SecurityException e) {
+				Log.d(TAG, CLASS_NAME + "getLocation: SecurityException");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/** 基站信息结构体 */
+	public class SCell{
+		public int LAC;
+		public int CID;
+	}
+
+	/**
+	 * 获取基站信息
+	 *
+	 * @throws Exception
+	 */
+	private SCell getCellInfo() {
+		SCell cell = new SCell();
+
+		/** 调用API获取基站信息 */
+		TelephonyManager mTelNet = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+		CellLocation location = mTelNet.getCellLocation();
+		if (location == null)
+			Log.d(TAG, CLASS_NAME+"getCellInfo: 获取基站信息失败");
+
+		int cid = 0;
+		int lac = 0;
+
+		if (location instanceof GsmCellLocation) {
+			cid = ((GsmCellLocation) location).getCid();
+			lac = ((GsmCellLocation) location).getLac();
+		}
+
+		/** 将获得的数据放到结构体中 */
+		cell.LAC = lac;
+		cell.CID = cid;
+
+		Log.d(TAG, CLASS_NAME + "getCellInfo: lac = "+lac
+			+"; cid = "+cid);
+		return cell;
+	}
+
+
 }
