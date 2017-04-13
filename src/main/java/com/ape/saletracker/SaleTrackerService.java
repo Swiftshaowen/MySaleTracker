@@ -25,6 +25,7 @@ import android.telephony.CellLocation;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
@@ -738,53 +739,11 @@ public class SaleTrackerService extends Service {
 		}
 	}
 
-	private double mLatitude, mLongitude;
-	private LocationListener mLocationListener = new LocationListener() {
-		@Override
-		public void onLocationChanged(Location location) {
-			//得到纬度
-			mLatitude = location.getLatitude();
-			//得到经度
-			mLongitude = location.getLongitude();
-			Log.d(TAG, CLASS_NAME + " onLocationChanged: mLatitude = " + mLatitude + "; mLongitude = " + mLongitude);
-		}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {
-
-		}
-
-		@Override
-		public void onProviderEnabled(String provider) {
-
-		}
-
-		@Override
-		public void onProviderDisabled(String provider) {
-
-		}
-	};
-	/**
-	 * @param
-	 * @return
-	 *
-	 */
-	void getLocation(){
-		// location
-		Log.d(TAG, CLASS_NAME+" getLocation: ");
-		if (mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			try {
-				Log.d(TAG, CLASS_NAME+" getLocation: NETWORK_PROVIDER");
-				mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 1, mLocationListener);
-			} catch (SecurityException e) {
-				Log.d(TAG, CLASS_NAME + "getLocation: SecurityException");
-				e.printStackTrace();
-			}
-		}
-	}
 
 	/** 基站信息结构体 */
 	public class SCell{
+		public int MCC;
+		public int MNC;
 		public int LAC;
 		public int CID;
 	}
@@ -800,18 +759,34 @@ public class SaleTrackerService extends Service {
 		/** 调用API获取基站信息 */
 		TelephonyManager mTelNet = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		CellLocation location = mTelNet.getCellLocation();
-		if (location == null)
-			Log.d(TAG, CLASS_NAME+"getCellInfo: 获取基站信息失败");
+		String operator = mTelNet.getNetworkOperator();
+		int mcc = 0;
+		int mnc = 0;
 
 		int cid = 0;
 		int lac = 0;
 
-		if (location instanceof GsmCellLocation) {
-			cid = ((GsmCellLocation) location).getCid();
-			lac = ((GsmCellLocation) location).getLac();
+		if (location != null) {
+			if (location instanceof GsmCellLocation) {
+                cid = ((GsmCellLocation) location).getCid();
+                lac = ((GsmCellLocation) location).getLac();
+            } else if (location instanceof CdmaCellLocation) {
+                cid = ((CdmaCellLocation) location).getBaseStationId();
+                lac = ((CdmaCellLocation) location).getNetworkId();
+            }
+		} else {
+			Log.d(TAG, CLASS_NAME+"getCellInfo: 获取基站信息失败");
 		}
 
+		if (operator != null) {
+			mcc = Integer.parseInt(operator.substring(0, 3));
+			mnc = Integer.parseInt(operator.substring(3));
+		} else {
+			Log.d(TAG, CLASS_NAME + "getCellInfo: 获取MCC信息失败");
+		}
 		/** 将获得的数据放到结构体中 */
+		cell.MCC = mcc;
+		cell.MNC = mnc;
 		cell.LAC = lac;
 		cell.CID = cid;
 
