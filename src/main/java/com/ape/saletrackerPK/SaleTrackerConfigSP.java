@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 public class SaleTrackerConfigSP {
-	private static final String TAG = "SaleTracker";
+	private static final String TAG = "SaleTrackerPK";
 	private static final String CLASS_NAME = "SaleTrackerConfigSP---->";
 
 

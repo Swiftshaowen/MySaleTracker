@@ -449,20 +449,23 @@ public class SaleTrackerService extends Service {
 			super.onChange(selfChange, uri);
 			Log.d(TAG, CLASS_NAME + "onChange: selfChange = " + selfChange
 					+ "; uri = " + uri);
-			Log.d(TAG, CLASS_NAME + "onChange: DEVICE_PROVISIONED = "+Settings.Secure.getInt(mContext.getContentResolver()
-					,Settings.Global.DEVICE_PROVISIONED, 0));
+
 //			Log.d(TAG, CLASS_NAME + "onChange: USER_SETUP_COMPLETE = " + Settings.Secure.getInt(
 //					mContext.getContentResolver(),"user_setup_complete", 0));
 			boolean needNotify = mStciSP.readNotifyNeed();
-			Log.d(TAG, CLASS_NAME + "start popup dialog notify =" + needNotify);
-			if (needNotify) {
+			int deviceProvisioned = Settings.Secure.getInt(mContext.getContentResolver()
+					,Settings.Global.DEVICE_PROVISIONED, 0);
+			Log.d(TAG, CLASS_NAME + "onChange: DEVICE_PROVISIONED = " + deviceProvisioned);
+			Log.d(TAG, CLASS_NAME + "onChange: needNotify =" + needNotify);
+			if (needNotify && (deviceProvisioned == 1)) {
+				// need to pop up notify after setup wizard finished
 				new Handler().postDelayed(new Runnable() {
 					@Override
 					public void run() {
 						Log.d(TAG, CLASS_NAME + "start popup dialog start");
 						popNotifyWindow(mContext);
 						mStciSP.writeNotifyNeed(false);
-						Log.d(TAG, CLASS_NAME + "start popup dialog finish111");
+						Log.d(TAG, CLASS_NAME + "start popup dialog finish");
 					}
 				}, 10000);
 			}

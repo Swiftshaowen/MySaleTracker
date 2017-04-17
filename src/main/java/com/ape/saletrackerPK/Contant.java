@@ -4,6 +4,7 @@ package com.ape.saletrackerPK;
  * Created by android on 5/18/16.
  */
 public class Contant {
+    public static final String PACKAGENAME = "com.ape.saletrackerPK_";
     public static final String CLIENT_NO = "Z0010037";
     public static final int START_TIME = 180;
     public static final int SPACE_TIME = 60;
@@ -28,10 +29,10 @@ public class Contant {
     public static final String KEY_SELECT_SEND_TYPE = "KEY_SELECT_SEND_TYPE";
     public static final String KEY_SERVER_NUMBER = "8646";
 
-    public static final String STS_REFRESH = "STS_REFRESH";
-    public static final String STSDATA_CONFIG = "STSDATA_CONFIG";
-    public static final String ACTION_SMS_SEND = "SMS_SEND_ACTION";
-    public static final String ACTION_SMS_DELIVERED = "SMS_DELIVERED_ACTION";
+    public static final String STS_REFRESH = PACKAGENAME+"STS_REFRESH";
+    public static final String STSDATA_CONFIG = PACKAGENAME+"STSDATA_CONFIG";
+    public static final String ACTION_SMS_SEND = PACKAGENAME+"SMS_SEND_ACTION";
+    public static final String ACTION_SMS_DELIVERED = PACKAGENAME+"SMS_DELIVERED_ACTION";
     public static final String NULL_IMEI = "000000000000000";
 
 
@@ -41,7 +42,7 @@ public class Contant {
     public  static final String SEND_TO_TME = "send_to_TME";
 
 
-    public  static final String ACTION_REFRESH_PANEL = "ACTION_REFRESH_PANEL";
+    public  static final String ACTION_REFRESH_PANEL = PACKAGENAME+"ACTION_REFRESH_PANEL";
 
     public static final String KEY_SENDED_SUCCESS = "KEY_SENDED_SUCCESS";
     public static final String KEY_SENDED_NUMBER = "KEY_SENDED_NUMBER";
