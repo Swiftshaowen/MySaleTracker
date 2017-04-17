@@ -4,6 +4,7 @@ package com.ape.saletracker;
  * Created by android on 5/18/16.
  */
 public class Contant {
+    public static final String PACKAGENAME = "com.ape.saletracker_";
     public static String DEFAULT_CLIENT_NO = "0000001000";
     public static int START_TIME = 30;
     public static int SPACE_TIME = 30;
@@ -33,10 +34,10 @@ public class Contant {
     public static final String KEY_SELECT_SEND_TYPE = "KEY_SELECT_SEND_TYPE";
     public static final String KEY_SERVER_NUMBER = "8646";
 
-    public static final String STS_REFRESH = "STS_REFRESH";
-    public static final String STSDATA_CONFIG = "STSDATA_CONFIG";
-    public static final String ACTION_SMS_SEND = "SMS_SEND_ACTION";
-    public static final String ACTION_SMS_DELIVERED = "SMS_DELIVERED_ACTION";
+    public static final String STS_REFRESH = PACKAGENAME+"STS_REFRESH";
+    public static final String STSDATA_CONFIG = PACKAGENAME+"STSDATA_CONFIG";
+    public static final String ACTION_SMS_SEND = PACKAGENAME+"SMS_SEND_ACTION";
+    public static final String ACTION_SMS_DELIVERED = PACKAGENAME+"SMS_DELIVERED_ACTION";
     public static final String NULL_IMEI = "000000000000000";
 
 
@@ -46,6 +47,6 @@ public class Contant {
     public  static final String SEND_TO_TME = "send_to_TME";
 
 
-    public  static final String ACTION_REFRESH_PANEL = "ACTION_REFRESH_PANEL";
+    public  static final String ACTION_REFRESH_PANEL = PACKAGENAME+"ACTION_REFRESH_PANEL";
 
 }

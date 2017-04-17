@@ -61,6 +61,7 @@ public class SaleTrackerService extends Service {
     private static boolean mIsSendSuccess = false;
     private static boolean mIsNeedNoticePop = false;
     private static boolean airplaneModeOn = false;
+	private static boolean mIsCDMA = false;
 
     private static int mMsgSendNum = 0;
 	public  static int mDefaultSendType = Contant.MSG_SEND_BY_NET;
@@ -622,27 +623,23 @@ public class SaleTrackerService extends Service {
 
 		// Client product model
 		StringBuffer PRODUCT_NO = new StringBuffer();
-		if(DEFAULT_VALUE.equals(mStrModel) || "".equals(mStrModel))
-		{
-			// weijie created. 17-3-3. Modify for QMobile
-			if (SaleTrackerUti.isQMobile()) {
-				String model = SystemProperties.get("ro.product.model.pk", Build.MODEL);
-				PRODUCT_NO.append(model);
-			} else {
-				PRODUCT_NO.append(Build.MODEL);
-			}
-		}
-		else
-		{
-			PRODUCT_NO.append(mStrModel);
-		}
+		PRODUCT_NO.append(Build.MODEL);
 
+		// add location information
 		SCell cell = getCellInfo();
+		String MNC = Integer.toString(cell.MNC);
 		String LAC = Integer.toString(cell.LAC);
 		String CID = Integer.toString(cell.CID);
+		String SID = Integer.toString(cell.SID);
+		String NID = Integer.toString(cell.NID);
+		String BID = Integer.toString(cell.BID);
 
-		// add sn no 20150703
-		String SN_NO = Build.SERIAL;
+		StringBuffer LOC = new StringBuffer();
+		if (mIsCDMA) {
+			LOC.append(",SID:" + SID).append(",NID:" + NID).append(",BID:" + BID);
+		} else {
+			LOC.append(",MNC:"+MNC).append(",LAC:" + LAC).append(",CID:" + CID);
+		}
 
 		// Soft version
 		StringBuffer SOFTWARE_NO = new StringBuffer();
@@ -653,9 +650,12 @@ public class SaleTrackerService extends Service {
 		}
 		SOFTWARE_NO.append(customVersion);
 
+		// add sn no 20150703
+		String SN_NO = Build.SERIAL;
+
 		// weijie created. 17-3-8. Modify for QMbile
-		smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
-				.append(","+SOFTWARE_NO).append(","+SN_NO).append(",LAC:"+LAC).append(",CID:"+CID);
+		smsContent.append("TN:IMEI1," + mStrIMEI).append("," + SAP_NO).append("," + PRODUCT_NO)
+				.append("," + SOFTWARE_NO).append("," + SN_NO).append(LOC);
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
 		return smsContent.toString();
@@ -746,6 +746,9 @@ public class SaleTrackerService extends Service {
 		public int MNC;
 		public int LAC;
 		public int CID;
+		public int SID;
+		public int NID;
+		public int BID;
 	}
 
 	/**
@@ -760,22 +763,24 @@ public class SaleTrackerService extends Service {
 		TelephonyManager mTelNet = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 		CellLocation location = mTelNet.getCellLocation();
 		String operator = mTelNet.getNetworkOperator();
-		int mcc = 0;
-		int mnc = 0;
-
-		int cid = 0;
-		int lac = 0;
+		int mcc = -1, mnc = -1;
+		int cid = -1, lac = -1;
+		int sid = -1, bid = -1, nid = -1;
 
 		if (location != null) {
 			if (location instanceof GsmCellLocation) {
-                cid = ((GsmCellLocation) location).getCid();
-                lac = ((GsmCellLocation) location).getLac();
-            } else if (location instanceof CdmaCellLocation) {
-                cid = ((CdmaCellLocation) location).getBaseStationId();
-                lac = ((CdmaCellLocation) location).getNetworkId();
-            }
+				Log.d(TAG, "getCellInfo: instanceof GsmCellLocation");
+				cid = ((GsmCellLocation) location).getCid();
+				lac = ((GsmCellLocation) location).getLac();
+			} else if (location instanceof CdmaCellLocation) {
+				Log.d(TAG, "getCellInfo: instanceof CdmaCellLocation");
+				mIsCDMA = true;
+				sid = ((CdmaCellLocation) location).getSystemId();
+				bid = ((CdmaCellLocation) location).getBaseStationId();
+				nid = ((CdmaCellLocation) location).getNetworkId();
+			}
 		} else {
-			Log.d(TAG, CLASS_NAME+"getCellInfo: 获取基站信息失败");
+			Log.d(TAG, "getCellInfo: 获取基站信息失败");
 		}
 
 		if (operator != null) {
@@ -789,9 +794,17 @@ public class SaleTrackerService extends Service {
 		cell.MNC = mnc;
 		cell.LAC = lac;
 		cell.CID = cid;
+		cell.SID = sid;
+		cell.NID = nid;
+		cell.BID = bid;
 
-		Log.d(TAG, CLASS_NAME + "getCellInfo: lac = "+lac
-			+"; cid = "+cid);
+		Log.d(TAG, CLASS_NAME + "getCellInfo: lac = " + lac
+				+ "; cid = " + cid
+				+ "; mcc = " + mcc
+				+ "; mnc = " + mnc
+				+ "; sid = " + sid
+				+ "; bid = " + bid
+				+ "; nid = " + nid);
 		return cell;
 	}
 
