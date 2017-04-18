@@ -734,7 +734,7 @@ public class SaleTrackerService extends Service {
 
 		// 只考虑连接数据网络的情况
 		if (mobile.getState() == NetworkInfo.State.CONNECTED
-				|| mobile.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
+				|| wifi.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
 			return true;
 		}
 		return false;
