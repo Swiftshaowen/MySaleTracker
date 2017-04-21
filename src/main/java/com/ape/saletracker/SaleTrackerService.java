@@ -731,8 +731,7 @@ public class SaleTrackerService extends Service {
 				+ " mobile.getState()="+ mobile.getState()
 				+ " mobile.getTypeName="+ mobile.getTypeName());
 
-		if (mobile.getState() == NetworkInfo.State.CONNECTED
-				|| wifi.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
+		if (mobile.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
 			return true;
 		} else {
 			return false;
@@ -783,14 +782,13 @@ public class SaleTrackerService extends Service {
 			Log.d(TAG, "getCellInfo: 获取基站信息失败");
 		}
 
-		if (operator != null) {
-			mcc = Integer.parseInt(operator.substring(0, 3));
+		if (operator != null && operator.length() > 3) {
+//			mcc = Integer.parseInt(operator.substring(0, 3));
 			mnc = Integer.parseInt(operator.substring(3));
 		} else {
-			Log.d(TAG, CLASS_NAME + "getCellInfo: 获取MCC信息失败");
+			Log.d(TAG, CLASS_NAME + "getCellInfo: 获取MNC信息失败");
 		}
 		/** 将获得的数据放到结构体中 */
-		cell.MCC = mcc;
 		cell.MNC = mnc;
 		cell.LAC = lac;
 		cell.CID = cid;
