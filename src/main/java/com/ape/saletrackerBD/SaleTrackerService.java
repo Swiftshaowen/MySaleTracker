@@ -1,4 +1,4 @@
-package com.ape.saletrackerPK;
+package com.ape.saletrackerBD;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -30,12 +30,10 @@ import com.wrapper.stk.HideMethod.SubscriptionManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 
 
 public class SaleTrackerService extends Service {
-	private static final String TAG = "SaleTrackerPK";
+	private static final String TAG = "SaleTrackerBD";
 	private static final String CLASS_NAME = "SaleTrackerService---->";
 
 	private static Context mContext;
@@ -77,7 +75,6 @@ public class SaleTrackerService extends Service {
 			e.printStackTrace();
 		}
 
-		resetUserSetupObserver(mContext);
 
 		registerReceiver(mStsAirplanReceiver, new IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED));
 		if(!airplaneModeOn)
@@ -117,7 +114,6 @@ public class SaleTrackerService extends Service {
         try {
             unregisterReceiver(mSaleTrackerReceiver);
 			unregisterReceiver(mStsAirplanReceiver);
-			mContext.getContentResolver().unregisterContentObserver(mUserSetupObserver);
 		} catch (Exception e) {
 			Log.e(TAG, CLASS_NAME+"onDestroy() Exception" + e.getMessage());
 			e.printStackTrace();
@@ -210,7 +206,6 @@ public class SaleTrackerService extends Service {
 						case Activity.RESULT_OK:
 							Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() SMS is send OK ");
 							//add send content to tme wap address
-
 
 							mStciSP.writeSendedResult(true);
 
@@ -309,14 +304,6 @@ public class SaleTrackerService extends Service {
 
 	}
 
-	private void popNotifyWindow(Context context){
-		Log.d(TAG, CLASS_NAME + "popNotifyWindow()  dialog start");
-		Intent Dialog = new Intent(context, WIKOSTSScreen.class);
-		Dialog.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		context.startActivity(Dialog);
-		Log.d(TAG, CLASS_NAME + "popNotifyWindow()  dialog finish");
-	}
-
 	private boolean isSmsAvailable() {
 		int sim_state;
 
@@ -325,22 +312,12 @@ public class SaleTrackerService extends Service {
 		return (TelephonyManager.SIM_STATE_READY == sim_state) ? true : false;
 	}
 
-	public static String getIMEI() {
-		String imei = mTm.getDeviceId(0);
-		Log.d(TAG, CLASS_NAME+"getIMEI()   imei = " + imei);
-
-		if (imei == null || imei.isEmpty()) {
-			return new String(Contant.NULL_IMEI);
-		}
-		return imei;
-	}
-
 	/**
 	 * @param
 	 * @return
 	 * getIMEI for PK
 	 */
-	public static String getIMEIPK() {
+	public static String getIMEIBD() {
 		String imei1 = mTm.getDeviceId(0);
 		String imei2 = mTm.getDeviceId(1);
 		if (imei1 == null || imei1.isEmpty()) {
@@ -394,39 +371,18 @@ public class SaleTrackerService extends Service {
 	public String setSendContent() {
 		StringBuffer smsContent = new StringBuffer();
 
-		mStrIMEI = getIMEI();
-		if (mStrIMEI.equals(Contant.NULL_IMEI)) {
-			Log.d(TAG, CLASS_NAME +
-					"init()    ********error********getIMEI() = null ***********error******");
-		}
-		// tishi
-		String REG = mStrIMEI;
+		mStrIMEI = getIMEIBD();
 
 		// Client No
 		String SAP_NO = mClientNo;
 
 		// Client product model
 		StringBuffer PRODUCT_NO = new StringBuffer();
-		String model = SystemProperties.get("ro.product.model.sts", Build.MODEL);
+		String model = Build.MODEL;
 		PRODUCT_NO.append(model);
 
-		// add sn no 20150703
-		String SN_NO = Build.SERIAL;
-
-		// Soft version
-		StringBuffer SOFTWARE_NO = new StringBuffer();
-		String customVersion = SystemProperties.get("ro.custom.build.version");
-		SOFTWARE_NO.append(customVersion);
-
-		// Cell ID
-		int CELL_ID = 0;
-		CellLocation cellLocation = mTm.getCellLocation();
-		if (cellLocation instanceof GsmCellLocation) {
-			CELL_ID = ((GsmCellLocation) cellLocation).getCid();
-		}
-
 		// weijie created. 17-3-8. Modify for QMbile
-		smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK()).append(" " + CELL_ID);
+		smsContent.append("SYST").append(" " + mStrIMEI).append(" " + PRODUCT_NO);
 
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
@@ -442,49 +398,5 @@ public class SaleTrackerService extends Service {
 		mContext.sendBroadcast(intent);
 	}
 
-	// ensure quick settings is disabled until the current user makes it through the setup wizard
-	private ContentObserver mUserSetupObserver = new ContentObserver(new Handler()) {
-		@Override
-		public void onChange(boolean selfChange, Uri uri) {
-			super.onChange(selfChange, uri);
-			Log.d(TAG, CLASS_NAME + "onChange: selfChange = " + selfChange
-					+ "; uri = " + uri);
 
-//			Log.d(TAG, CLASS_NAME + "onChange: USER_SETUP_COMPLETE = " + Settings.Secure.getInt(
-//					mContext.getContentResolver(),"user_setup_complete", 0));
-			boolean needNotify = mStciSP.readNotifyNeed();
-			int deviceProvisioned = Settings.Secure.getInt(mContext.getContentResolver()
-					,Settings.Global.DEVICE_PROVISIONED, 0);
-			Log.d(TAG, CLASS_NAME + "onChange: DEVICE_PROVISIONED = " + deviceProvisioned);
-			Log.d(TAG, CLASS_NAME + "onChange: needNotify =" + needNotify);
-			if (needNotify && (deviceProvisioned == 1)) {
-				// need to pop up notify after setup wizard finished
-				new Handler().postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						Log.d(TAG, CLASS_NAME + "start popup dialog start");
-						popNotifyWindow(mContext);
-						mStciSP.writeNotifyNeed(false);
-						Log.d(TAG, CLASS_NAME + "start popup dialog finish");
-					}
-				}, 10000);
-			}
-		}
-	};
-
-	private void resetUserSetupObserver(Context context ) {
-		Log.d(TAG, CLASS_NAME + "resetUserSetupObserver");
-
-		if (mStciSP.readNotifyNeed()) {
-			context.getContentResolver().unregisterContentObserver(mUserSetupObserver);
-//			context.getContentResolver().registerContentObserver(
-//                    Settings.Secure.getUriFor("user_setup_complete"), true,
-//                    mUserSetupObserver);
-
-			context.getContentResolver().registerContentObserver(
-					Settings.Global.getUriFor(Settings.Global.DEVICE_PROVISIONED), true,
-					mUserSetupObserver);
-			mUserSetupObserver.onChange(false, Settings.Global.getUriFor(Settings.Global.DEVICE_PROVISIONED));
-		}
-	}
 }

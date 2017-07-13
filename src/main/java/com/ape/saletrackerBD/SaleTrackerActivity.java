@@ -1,4 +1,4 @@
-package com.ape.saletrackerPK;
+package com.ape.saletrackerBD;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -27,23 +27,17 @@ import android.widget.Toast;
 
 import com.wrapper.stk.HideMethod;
 
-import java.util.Map;
-
 public class SaleTrackerActivity extends Activity {
 	
-	private static final String TAG = "SaleTrackerPK";
+	private static final String TAG = "SaleTrackerBD";
 	private static final String CLASS_NAME = "SaleTrackerActivity---->";
 	private static String mVersion;
 	private static String mStrSendResult = "unknown";
 
-	private LinearLayout mSendTypeLayout;
 	private EditText mOpenTime;
 	private EditText mSpaceTime;
 	private EditText mDayTime;
 	private EditText mServerNumber;
-	private CheckBox mNotify;
-	private CheckBox mSwitchWhole;
-	private Spinner mSpinner;
 	public static SharedPreferences pre ;
 	public static Editor ed ;
 	private static Context mContext;
@@ -59,7 +53,6 @@ public class SaleTrackerActivity extends Activity {
 
 	private static SaleTrackerConfigSP stciSP = new SaleTrackerConfigSP();
 
-	private TextView mTips;
 	TextView  showOpenFileTextView;
 	TextView setResutTextView;
 	TextView sendTypeTextView;
@@ -77,13 +70,12 @@ public class SaleTrackerActivity extends Activity {
 		// get version name
 		try {
 			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			mVersion = "Version: QMobile_"+packageInfo.versionName;
+			mVersion = "Version: symphony_"+packageInfo.versionName;
 			Log.d(TAG, CLASS_NAME + " onCreate: mVersion = " + mVersion);
 		} catch (PackageManager.NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 
 		init();
 
@@ -98,76 +90,15 @@ public class SaleTrackerActivity extends Activity {
 		pre = getSharedPreferences(Contant.STSDATA_CONFIG, MODE_PRIVATE);
 		ed = pre.edit();
 
-		mTips = (TextView) findViewById(R.id.tvTips);
 		showOpenFileTextView= (TextView)this.findViewById(R.id.tvShowOpenFile);
 		setResutTextView = (TextView)this.findViewById(R.id.tvShowSendResult);
 		sendTypeTextView = (TextView)this.findViewById(R.id.tvShowSendType);
 		mOpenTime = (EditText)findViewById(R.id.editopentime);
 		mSpaceTime = (EditText)findViewById(R.id.spacetime);
 		mDayTime = (EditText)findViewById(R.id.daytime);
-
-		// weijie created. 17-3-13. Add for QMobile
-		LinearLayout qmobileLayout = (LinearLayout) findViewById(R.id.qmobile_layout);
-		mSendTypeLayout = (LinearLayout) findViewById(R.id.llSendType);
 		mServerNumber = (EditText) findViewById(R.id.server_number);
-		mTips.setVisibility(View.GONE);
-		qmobileLayout.setVisibility(View.VISIBLE);
-		mSendTypeLayout.setVisibility(View.GONE);
+
 		ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
-
-		mNotify = (CheckBox)findViewById(R.id.notify);
-		mNotify.setChecked(pre.getBoolean(Contant.KEY_NOTIFY, getResources().getBoolean(R.bool.dialog_notify)));
-		mNotify.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ed.putBoolean(Contant.KEY_NOTIFY, mNotify.isChecked());
-				ed.commit();
-			}
-		});
-
-		mSwitchWhole = (CheckBox)findViewById(R.id.switchSendType);
-		if (SystemProperties.get("ro.project", "trunk").equals("oys_ru")) {
-			mSwitchWhole.setVisibility(View.INVISIBLE);
-		} else {
-			mSwitchWhole.setVisibility(View.VISIBLE);
-		}
-		mSwitchWhole.setChecked(pre.getBoolean(Contant.KEY_SWITCH_SENDTYPE, false));
-		mSwitchWhole.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.d(TAG, CLASS_NAME+"mSwitchWhole onClick: isChecked = "+mSwitchWhole.isChecked());
-				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, mSwitchWhole.isChecked());
-				ed.commit();
-
-				if (mSwitchWhole.isChecked() == false) {
-					mSpinner.setEnabled(false);
-				} else {
-					mSpinner.setEnabled(true);
-				}
-			}
-		});
-
-		mSpinner = (Spinner) findViewById(R.id.spinnerSendType);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mStrings);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		mSpinner.setAdapter(adapter);
-
-		mSpinner.setOnItemSelectedListener( new OnItemSelectedListener() {
-			public void onItemSelected(
-					AdapterView<?> parent, View view, int position, long id) {
-				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, position);
-				ed.commit();
-				updateUI();
-			}
-
-			public void onNothingSelected(AdapterView<?> parent) {
-				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, -1);
-				ed.commit();
-			}
-		});
-
-		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
-		mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
 
 		TextView showVersionTv = (TextView)findViewById(R.id.tvShowVersion);
 		showVersionTv.setText(mVersion);
@@ -199,7 +130,6 @@ public class SaleTrackerActivity extends Activity {
 				stciSP.writeSendedResult(false);
 				stciSP.writeSendedNumber(0);
 
-				mSwitchWhole.setChecked(false);
 				ed.putInt(Contant.KEY_OPEN_TIME, DEFAULT_START_TIME); //mOpenTime.getText().toString());
 				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
 				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
@@ -239,8 +169,6 @@ public class SaleTrackerActivity extends Activity {
 		Log.d(TAG, CLASS_NAME + "updateUI: ");
 
 		// Update UI
-		mSpinner.setEnabled(mSwitchWhole.isChecked() ? true : false);
-		mSpinner.setSelection(pre.getInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE));
 		mOpenTime.setText(""+pre.getInt(Contant.KEY_OPEN_TIME,
 				DEFAULT_START_TIME));
 		mSpaceTime.setText(""+pre.getInt(Contant.KEY_SPACE_TIME,
@@ -256,15 +184,9 @@ public class SaleTrackerActivity extends Activity {
 		//if first send time is ok, set mSwitchWhole unchecked
 		if(stciSP.readSendedResult()){
 			Log.d(TAG, CLASS_NAME+"updateUI: send is OK, set mSwitchWhole unchecked");
-			mSpinner.setEnabled(false);
-			mSwitchWhole.setChecked(false);
 		}
 
-		if(mSwitchWhole.isChecked()){
-			strTmp = "SendType(from the Switch control) : ";
-		}else {
-			strTmp = "SendType : ";
-		}
+		strTmp = "SendType : ";
 
 		switch (iSendTypeTmp) {
 			case Contant.ACTION_SEND_BY_SMS:

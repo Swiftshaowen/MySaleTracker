@@ -1,10 +1,10 @@
-package com.ape.saletrackerPK;
+package com.ape.saletrackerBD;
 
 import android.content.Context;
 import android.util.Log;
 
 public class SaleTrackerConfigSP {
-	private static final String TAG = "SaleTrackerPK";
+	private static final String TAG = "SaleTrackerBD";
 	private static final String CLASS_NAME = "SaleTrackerConfigSP---->";
 
 

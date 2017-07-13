@@ -5,11 +5,11 @@ android {
     buildToolsVersion "24.0.0"
 
     defaultConfig {
-        applicationId 'com.ape.saletrackerPK'
+        applicationId 'com.ape.saletrackerBD'
         minSdkVersion 23
         targetSdkVersion 23
         versionCode 9008161
-        versionName "7.0.10.14"
+        versionName "7.0.10.01"
 
         jackOptions {
             enabled true

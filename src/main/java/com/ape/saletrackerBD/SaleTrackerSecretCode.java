@@ -1,4 +1,4 @@
-package com.ape.saletrackerPK;
+package com.ape.saletrackerBD;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,7 +8,7 @@ import static com.android.internal.telephony.TelephonyIntents.SECRET_CODE_ACTION
 
  public class SaleTrackerSecretCode extends BroadcastReceiver {   
 
-	private static final String TAG = "SaleTrackerPK";
+	private static final String TAG = "SaleTrackerBD";
 	
  @Override  
     public void onReceive(Context arg0, Intent arg1) {   
@@ -18,7 +18,7 @@ import static com.android.internal.telephony.TelephonyIntents.SECRET_CODE_ACTION
 		Log.d(TAG, "SaleTrackerSecretCode start");
 		   try{
 				Intent intent = new Intent();
-				intent.setClassName("com.ape.saletrackerPK", "com.ape.saletrackerPK.SaleTrackerActivity");
+				intent.setClassName("com.ape.SaleTrackerBD", "com.ape.SaleTrackerBD.SaleTrackerActivity");
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);  //must
 				arg0.startActivity(intent);
 				return;

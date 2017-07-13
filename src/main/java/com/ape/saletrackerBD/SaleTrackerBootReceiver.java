@@ -1,23 +1,20 @@
-package com.ape.saletrackerPK;
+package com.ape.saletrackerBD;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
-
-import java.util.Map;
 
 import static android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY;
 
 
 public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
-	private static final String TAG = "SaleTrackerPK";
+	private static final String TAG = "SaleTrackerBD";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
-	private static final String VERSION_NUMBER = "20170417";
+	private static final String VERSION_NUMBER = "20170713";
 	private static final String CONFIG_START_TIME = "start_time";
 	private static final String CONFIG_SPACE_TIME = "space_time";
 

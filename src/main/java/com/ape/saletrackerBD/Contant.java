@@ -1,14 +1,14 @@
-package com.ape.saletrackerPK;
+package com.ape.saletrackerBD;
 
 /**
  * Created by android on 5/18/16.
  */
 public class Contant {
-    public static final String PACKAGENAME = "com.ape.saletrackerPK_";
-    public static final String CLIENT_NO = "Z0010037";
+    public static final String PACKAGENAME = "com.ape.saletrackerBD_";
+    public static final String CLIENT_NO = "Z0010086";
     public static final int START_TIME = 180;
     public static final int SPACE_TIME = 60;
-    public static final String SERVER_NUMBER = "8646";
+    public static final String SERVER_NUMBER = "6969";
 
     public static final int MSG_SEND_BY_SMS = 0;
     public static final int MSG_SEND_BY_NET = 1;

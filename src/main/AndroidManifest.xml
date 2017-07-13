@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ape.saletrackerPK"
+    package="com.ape.saletrackerBD"
     android:sharedUserId="android.uid.system"
     >
 
@@ -18,16 +18,19 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <protected-broadcast android:name="com.ape.saletrackerBD_STS_REFRESH" />
+    <protected-broadcast android:name="com.ape.saletrackerBD_ACTION_REFRESH_PANEL" />
     <application
         android:label="@string/app_name"
         android:debuggable="false">
       <!--  android:persistent="true" > -->
         <activity
-            android:name="com.ape.saletrackerPK.SaleTrackerActivity"
+            android:name="com.ape.saletrackerBD.SaleTrackerActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <!--
             intent-filter>
@@ -44,7 +47,7 @@
             
         </activity
         -->
-        <receiver android:name="com.ape.saletrackerPK.SaleTrackerSecretCode" >
+        <receiver android:name="com.ape.saletrackerBD.SaleTrackerSecretCode" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SECRET_CODE" />
 
@@ -54,10 +57,10 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.ape.saletrackerPK.SaleTrackerService" >
+        <service android:name="com.ape.saletrackerBD.SaleTrackerService" >
         </service>
 
-        <receiver android:name="com.ape.saletrackerPK.SaleTrackerBootReceiver" >
+        <receiver android:name="com.ape.saletrackerBD.SaleTrackerBootReceiver" >
             <intent-filter android:priority="1000" >
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
@@ -65,7 +68,7 @@
         </receiver>
 
         <activity
-            android:name="com.ape.saletrackerPK.WIKOSTSScreen"
+            android:name="com.ape.saletrackerBD.WIKOSTSScreen"
             android:excludeFromRecents="true"
             android:icon="@android:drawable/ic_dialog_info"
             android:theme="@android:style/Theme.NoTitleBar" >
