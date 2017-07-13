@@ -1,4 +1,4 @@
-package com.saletracker;
+package com.saletrackerBD;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -30,6 +32,8 @@ import com.wrapper.stk.HideMethod.SubscriptionManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.R.attr.publicKey;
 
 
 public class SaleTrackerService extends Service {
@@ -55,6 +59,9 @@ public class SaleTrackerService extends Service {
 	private final BroadcastReceiver mStsAirplanReceiver = new StsAirplanReceiver();
 
 	private static TelephonyManager mTm;
+	private String url;
+	private static final String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCY4gRmZHQimOWRr99Yi64jGDGMJSa7Awx05J9gpJuQz9tZPrP6QCWFJNpBxBxS_UMg-36FjFl_l8qLBWl-q7pVlyc4qdxq4HGQKJfdBm8aOFQ3Ekaylm1p2s5YKxvYTHDydKG72EXDdvbea8ZvXA1rKP-MpOWKA7XmkLpChQqrsQIDAQAB";
+	private static String mHosturl = "http://eservice.tinno.com/eservice/stsReport?reptype=report";
 
 	@Override
 	public void onCreate() {
@@ -238,6 +245,18 @@ public class SaleTrackerService extends Service {
 						sendContentBySMS();
 					}
 					break;
+				case Contant.ACTION_SEND_RST_BY_NET:
+					Boolean val = (Boolean) msg.obj;
+					Log.d(TAG, CLASS_NAME + "handleMessage() sended by net and  return  =" + val);
+					if (val) {
+						mIsSendSuccess = true;
+						mStciSP.writeSendedToMeResult(val);
+
+						// refresh SaleTrackerActivity panel
+						refreshPanelStatus();
+
+						SaleTrackerService.this.stopSelf();
+					}
 				default:
 					Log.d(TAG, CLASS_NAME+"handleMessage() send type null");
 			}
@@ -381,7 +400,7 @@ public class SaleTrackerService extends Service {
 		String model = Build.MODEL;
 		PRODUCT_NO.append(model);
 
-		// weijie created. 17-3-8. Modify for QMbile
+		// weijie created. 17-3-8. Modify for symphony
 		smsContent.append("SYST").append(" " + mStrIMEI).append(" " + PRODUCT_NO);
 
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
@@ -398,5 +417,73 @@ public class SaleTrackerService extends Service {
 		mContext.sendBroadcast(intent);
 	}
 
+	public boolean isNetworkAvailable() {
+		ConnectivityManager connectivity = (ConnectivityManager) mContext
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		if (connectivity == null) {
 
+		} else {
+			NetworkInfo[] info = connectivity.getAllNetworkInfo();
+			if (info != null) {
+				for (int i = 0; i < info.length; i++) {
+					if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+						Log.d(TAG, CLASS_NAME+"isNetworkAvailable()   return true");
+						return true;
+					}
+				}
+			}
+		}
+		Log.d(TAG, CLASS_NAME+"isNetworkAvailable() return false");
+		return false;
+	}
+
+	private void sendContentByNetwork() {
+		String msg_contents = setSendContent();
+
+		if ("".equals(msg_contents)) {
+			Log.e(TAG, CLASS_NAME +
+					"sendContentByNetwork()  sendContentByNetwork--> send_sms GET msg_contents  fail");
+			return;
+		}
+		try {
+			int msgid = mMsgSendNum;
+			String encryptContents = RSAHelper.encrypt(publicKey, msg_contents);
+			url = mHosturl + "&msgid=" + msgid + "&repinfo=" + encryptContents;
+		} catch (Exception e) {
+			Log.d(TAG, CLASS_NAME+"sendContentByNetwork()  **************** err****************");
+			return;
+		}
+		new Thread(runnable).start();
+	}
+
+
+	private Runnable runnable = new Runnable() {
+		@Override
+		public void run() {
+			Boolean result = false;
+			try {
+				Log.d(TAG, CLASS_NAME + "run()  Runnable-->start");
+				HttpRequester request = new HttpRequester();
+				HttpRespons hr = request.sendGet(url);
+
+				if (hr.getContentCollection() != null
+						&& hr.getContentCollection().get(0) != null) {
+					if (hr.getContentCollection().get(0).equals("0")) {
+						result = true;
+					}
+				}
+				if (hr.getCode() != 200) {
+					Log.d(TAG, CLASS_NAME + "run()   Runnable--->" + "hr.getCode() =" + hr.getCode());
+					result = false;
+				}
+
+			} catch (Exception e) {
+				Log.d(TAG, CLASS_NAME + "run()  Exception" + e.toString());
+				result = false;
+			} finally {
+				Log.d(TAG, CLASS_NAME + "run()   Runnable--->" + "result");
+				MessageHandler.obtainMessage(Contant.ACTION_SEND_RST_BY_NET, result).sendToTarget();
+			}
+		}
+	};
 }

@@ -38,7 +38,7 @@
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
     <string name="maxtime">How long to set STS after boot up (minutes):</string>
-    <string name="testtime">Interval time of error requests(minute,min 1):</string>
+    <string name="testtime">Interval time of error requests(minutes):</string>
     <string name="save">save</string>
     <string name="clear">force clear result</string>
     <string name="select_send_type_title">when finish sts test,must uncheck the Switch</string>

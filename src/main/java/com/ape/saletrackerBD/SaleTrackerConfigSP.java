@@ -46,6 +46,19 @@ public class SaleTrackerConfigSP {
 				.edit().putBoolean(Contant.KEY_SENDED_SUCCESS, res).commit();
 	}
 
+	public boolean readSendedToMeResult(){
+		boolean res = mContext.getSharedPreferences(Contant.STSDATA_CONFIG,mContext.MODE_PRIVATE)
+				.getBoolean(Contant.KEY_SENDED_TOME_SUCCESS, false);
+		Log.d(TAG, CLASS_NAME + "readSendedToMeResult: res = " + res);
+		return res;
+	}
+
+	public void writeSendedToMeResult(boolean res){
+		Log.d(TAG, CLASS_NAME + "writeSendedToMeResult: res = " + res);
+		mContext.getSharedPreferences(Contant.STSDATA_CONFIG,mContext.MODE_PRIVATE)
+				.edit().putBoolean(Contant.KEY_SENDED_TOME_SUCCESS, res).commit();
+	}
+
 	public int readSendedNumber(){
 		int res = mContext.getSharedPreferences(Contant.STSDATA_CONFIG,mContext.MODE_PRIVATE)
 				.getInt(Contant.KEY_SENDED_NUMBER, 0);
@@ -83,19 +96,6 @@ public class SaleTrackerConfigSP {
 		Log.d(TAG, CLASS_NAME + "writeSpaceTime: res = " + num);
 		mContext.getSharedPreferences(Contant.STSDATA_CONFIG,mContext.MODE_PRIVATE)
 				.edit().putInt(Contant.KEY_SPACE_TIME, num).commit();
-	}
-
-	public boolean readNotifyNeed(){
-		boolean res = mContext.getSharedPreferences(Contant.STSDATA_CONFIG,mContext.MODE_PRIVATE)
-				.getBoolean(Contant.KEY_NOTIFY, true);
-		Log.d(TAG, CLASS_NAME + "readNotifyNeed: res = " + res);
-		return res;
-	}
-
-	public void writeNotifyNeed(boolean res){
-		Log.d(TAG, CLASS_NAME + "writeNotifyNeed: res = " + res);
-		mContext.getSharedPreferences(Contant.STSDATA_CONFIG,mContext.MODE_PRIVATE)
-				.edit().putBoolean(Contant.KEY_NOTIFY, res).commit();
 	}
 
 	public String readServerNumber(){

@@ -203,7 +203,7 @@ public class SaleTrackerActivity extends Activity {
 		}
 
 		/*******************SHOW IMEI*****************/
-		boolean bSendToTme = false;
+		boolean bSendToTme = stciSP.readSendedToMeResult();
 
 		showOpenFileTextView.setText ("IMEI1 :  " + HideMethod.TelephonyManager.getDefault().getDeviceId(0,mContext));
 

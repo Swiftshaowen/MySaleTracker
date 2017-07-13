@@ -45,5 +45,6 @@ public class Contant {
     public  static final String ACTION_REFRESH_PANEL = PACKAGENAME+"ACTION_REFRESH_PANEL";
 
     public static final String KEY_SENDED_SUCCESS = "KEY_SENDED_SUCCESS";
+    public static final String KEY_SENDED_TOME_SUCCESS = "KEY_SENDED_SUCCESS";
     public static final String KEY_SENDED_NUMBER = "KEY_SENDED_NUMBER";
 }

@@ -1,4 +1,4 @@
-package com.saletracker;
+package com.saletrackerBD;
 
 import org.junit.Test;
 
