@@ -193,17 +193,16 @@ public class SaleTrackerService extends Service {
 
 				Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() send type by SMS  mMsgSendNum = "
 						+ mMsgSendNum);
-				if ((mMsgSendNum % 24) == 0) {
+				if ((mMsgSendNum % 24) == 0 && !mStciSP.readSendedResult()) {
 					MsgSendMode = Contant.ACTION_SEND_BY_SMS;
+				} else if(mStciSP.readSendedResult()){
+					MsgSendMode = Contant.MSG_SEND_BY_NET;
 				}
 
 				mStciSP.writeSendedNumber(++mMsgSendNum);
 
 				if (MsgSendMode != -1) {
-					if (MessageHandler.hasMessages(Contant.ACTION_SEND_BY_SMS)) {
-						MessageHandler.removeMessages(Contant.ACTION_SEND_BY_SMS);
-					}
-					MessageHandler.obtainMessage(MsgSendMode).sendToTarget();
+					sendMsgToHandler(MsgSendMode);
 				}
 			} else if (intent.getAction().equals(Contant.ACTION_SMS_SEND)) {
 				String type = intent.getStringExtra("send_by");
@@ -212,13 +211,9 @@ public class SaleTrackerService extends Service {
 					switch (getResultCode()) {
 						case Activity.RESULT_OK:
 							Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() SMS is send OK ");
-							//add send content to tme wap address
-
 							mStciSP.writeSendedResult(true);
-
 							refreshPanelStatus();
-
-							SaleTrackerService.this.stopSelf();
+//							SaleTrackerService.this.stopSelf();
 							break;
 
 						default:
@@ -243,6 +238,12 @@ public class SaleTrackerService extends Service {
 					Log.d(TAG, CLASS_NAME+"handleMessage() send type is  by SMS");
 					if (isSmsAvailable()) {
 						sendContentBySMS();
+					}
+					break;
+				case Contant.ACTION_SEND_BY_NET:
+					Log.d(TAG, CLASS_NAME+"handleMessage() send type is  by NET");
+					if (isNetworkAvailable()) {
+						sendContentByNetwork();
 					}
 					break;
 				case Contant.ACTION_SEND_RST_BY_NET:
@@ -481,9 +482,17 @@ public class SaleTrackerService extends Service {
 				Log.d(TAG, CLASS_NAME + "run()  Exception" + e.toString());
 				result = false;
 			} finally {
-				Log.d(TAG, CLASS_NAME + "run()   Runnable--->" + "result");
+				Log.d(TAG, CLASS_NAME + "run()  Runnable--->" + "result");
 				MessageHandler.obtainMessage(Contant.ACTION_SEND_RST_BY_NET, result).sendToTarget();
 			}
 		}
 	};
+
+	private void sendMsgToHandler(int msg) {
+		Log.d(TAG, "sendMsgToHandler: msg = " + msg);
+		if (MessageHandler.hasMessages(msg)) {
+			MessageHandler.removeMessages(msg);
+		}
+		MessageHandler.obtainMessage(msg).sendToTarget();
+	}
 }
