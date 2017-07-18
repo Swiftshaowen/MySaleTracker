@@ -35,5 +35,4 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'com.myos.staticlibs:android-common-v6.0:0.0.2@aar'
-    compile 'com.myos.staticlibs:myosutils-v1.0:0.0.15'
 }

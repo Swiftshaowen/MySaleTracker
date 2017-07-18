@@ -7,7 +7,7 @@ import android.util.Config;
 import android.util.Log;
 import android.util.Xml;
 
-import com.ape.util.ApeConfigParser;
+import com.ape.saletracker.ApeConfigParser;
 
 import org.xmlpull.v1.XmlPullParser;
 
