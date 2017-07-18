@@ -10,18 +10,11 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.SystemProperties;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,6 +127,8 @@ public class SaleTrackerActivity extends Activity {
 				ed.putInt(Contant.KEY_SPACE_TIME, DEFAULT_SPACE_TIME);
 				ed.putBoolean(Contant.KEY_SWITCH_SENDTYPE, false);
 				ed.putInt(Contant.KEY_SELECT_SEND_TYPE, DEFAULT_SEND_TYPE);
+				ed.putBoolean(Contant.KEY_SENDED_TOME_SUCCESS, false);
+				ed.putBoolean(Contant.KEY_SENDED_SUCCESS, false);
 				ed.commit();
 				updateUI();
 				showToast("Clear successful" );
@@ -217,7 +212,7 @@ public class SaleTrackerActivity extends Activity {
 			setResutTextView.setText("Send result1 : " + mStrSendResult + "    result2:  No");
 		}
 
-		setResutTextView.setText("Send result1 : " + mStrSendResult);
+//		setResutTextView.setText("Send result1 : " + mStrSendResult);
 	}
 
 	public BroadcastReceiver refreshReceiver = new BroadcastReceiver() {

@@ -176,7 +176,7 @@ public class SaleTrackerService extends Service {
 			Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver() onReceive start: action = " + intent.getAction()
 					+ "; elapsed time = " + SystemClock.elapsedRealtime()/1000);
 
-			mIsSendSuccess = mStciSP.readSendedResult();
+			mIsSendSuccess = mStciSP.readSendedToMeResult();
 			if (intent.getAction().equals(Contant.STS_REFRESH)) {
 				if (mIsSendSuccess || (mMsgSendNum > Contant.MAX_SEND_CONUT_BY_NET)) {
 					Log.d(TAG, CLASS_NAME + "SaleTrackerReceiver()  The message is send success or the maximum sended number, stop SaleTrackerService");
