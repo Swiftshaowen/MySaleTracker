@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources module="platform" configVersion="1.0.0.0" requirementsVersion="0.1">
-
     <!-- 1. client_no -->
     <feature id = "xxxxx" title="client_no" >
-        <string name="client_no" value="0000011265"></string>
+        <string name="client_no" value="0000011094"></string>
     </feature>
 
     <!-- 2. send_type --><!-- 0  sended by sms ; 1 sended by net ; 2 sended by net and sms  -->
