@@ -514,8 +514,9 @@ public class SaleTrackerService extends Service {
 	public boolean isNetworkAvailable() {
 		// Add for SUGAR INLINE
 		// Only mobile connection allowed
-		
-		if (!checkNetworkConnection(mContext)) {
+
+		if (!checkNetworkConnection(mContext) || !isSimReady()) {
+			Log.d(TAG, CLASS_NAME+"isNetworkAvailable: false");
 			return false;
 		}
 
@@ -807,5 +808,11 @@ public class SaleTrackerService extends Service {
 		return cell;
 	}
 
+	boolean isSimReady() {
+		Log.d(TAG, CLASS_NAME + "isSimReady: ");
+		int state = mTm.getSimState();
+		Log.d(TAG, CLASS_NAME + "isSimReady: state = " + state);
+		return state == TelephonyManager.SIM_STATE_READY ? true : false;
+	}
 
 }
