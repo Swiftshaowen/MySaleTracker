@@ -402,7 +402,7 @@ public class SaleTrackerService extends Service {
 		PRODUCT_NO.append(model);
 
 		// weijie created. 17-3-8. Modify for symphony
-		smsContent.append("SYST").append(" " + mStrIMEI).append(" " + PRODUCT_NO);
+		smsContent.append("FBS4").append(" " + mStrIMEI).append(" " + PRODUCT_NO);
 
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 

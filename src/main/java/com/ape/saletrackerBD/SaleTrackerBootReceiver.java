@@ -14,7 +14,7 @@ public class SaleTrackerBootReceiver extends BroadcastReceiver {
 
 	private static final String TAG = "SaleTrackerBD";
 	private static final String CLASS_NAME = "SaleTrackerBootReceiver---->";
-	private static final String VERSION_NUMBER = "20170713";
+	private static final String VERSION_NUMBER = "20170821";
 	private static final String CONFIG_START_TIME = "start_time";
 	private static final String CONFIG_SPACE_TIME = "space_time";
 
