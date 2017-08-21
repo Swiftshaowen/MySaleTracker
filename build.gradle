@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.ape.saletracker"
         minSdkVersion 23
         targetSdkVersion 23
         versionCode 9008161
-        versionName "7.0.10.15"
+        versionName "7.0.10.16"
         //output apk name : ApeSaleTracker_6.0.0.02.apk
     }
     buildTypes {

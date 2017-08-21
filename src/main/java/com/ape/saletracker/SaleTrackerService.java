@@ -514,6 +514,7 @@ public class SaleTrackerService extends Service {
 	public boolean isNetworkAvailable() {
 		// Add for SUGAR INLINE
 		// Only mobile connection allowed
+		
 		if (!checkNetworkConnection(mContext)) {
 			return false;
 		}
@@ -731,7 +732,7 @@ public class SaleTrackerService extends Service {
 				+ " mobile.getState()="+ mobile.getState()
 				+ " mobile.getTypeName="+ mobile.getTypeName());
 
-		if (mobile.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
+		if (mobile.getState() == NetworkInfo.State.CONNECTED || wifi.getState() == NetworkInfo.State.CONNECTED) {  //getState()方法是查询是否连接了数据网络
 			return true;
 		} else {
 			return false;
