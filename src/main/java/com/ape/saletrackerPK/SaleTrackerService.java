@@ -21,6 +21,7 @@ import android.telephony.CellLocation;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 import android.util.Log;
@@ -418,15 +419,27 @@ public class SaleTrackerService extends Service {
 		String customVersion = SystemProperties.get("ro.custom.build.version");
 		SOFTWARE_NO.append(customVersion);
 
+		/** 调用API获取基站信息 */
+		CellLocation location = mTm.getCellLocation();
+		// LAC
+		int LAC = 0;
 		// Cell ID
 		int CELL_ID = 0;
-		CellLocation cellLocation = mTm.getCellLocation();
-		if (cellLocation instanceof GsmCellLocation) {
-			CELL_ID = ((GsmCellLocation) cellLocation).getCid();
+
+		if (location != null) {
+			if (location instanceof GsmCellLocation) {
+				Log.d(TAG, "getCellInfo: instanceof GsmCellLocation");
+				CELL_ID = ((GsmCellLocation) location).getCid();
+				LAC = ((GsmCellLocation) location).getLac();
+			} else if (location instanceof CdmaCellLocation) {
+				Log.d(TAG, "getCellInfo: instanceof CdmaCellLocation");
+			}
+		} else {
+			Log.d(TAG, "getCellInfo: 获取基站信息失败");
 		}
 
 		// weijie created. 17-3-8. Modify for QMbile
-		smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK()).append(" " + CELL_ID);
+		smsContent.append("NOIR IMEI ").append(PRODUCT_NO).append(" " + getIMEIPK()).append(" " + LAC + " " + CELL_ID);
 
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
