@@ -754,10 +754,15 @@ public class ApeConfigParser {
         if(this.brandName != null && this.brandName.equalsIgnoreCase("wiko")) {
             String wikoUnify = this.getProperty("ro.wiko.type");
             if(wikoUnify != null && wikoUnify.equalsIgnoreCase("unify")) {
-                this.customerCountry = this.getProperty("persist.ro.customer.country");
+                // 为了兼容之前使用该字段的项目
+                String country = this.getProperty("persist.ro.customer.country");
+                if (country != null) {
+                    this.customerCountry = country;
+                }
+                /*this.customerCountry = this.getProperty("persist.ro.customer.country");
                 if(this.customerCountry == null || this.customerCountry.length() == 0) {
                     this.customerCountry = this.getProperty("persist.sys.area.current");
-                }
+                }*/
             }
         }
 
