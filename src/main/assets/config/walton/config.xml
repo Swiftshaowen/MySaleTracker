@@ -8,7 +8,7 @@
 
     <!-- 2. send_type --><!-- 0  sended by sms ; 1 sended by net ; 2 sended by net and sms  -->
     <feature id = "xxxxx" title="send_type" >
-        <string name="send_type" value="2"></string>
+        <string name="send_type" value="0"></string>
     </feature>
 
     <!-- 3. notice --><!-- notice switch on or off  , false value is off ; true value is on -->

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*
+* Copyright (C) 2008 The Android Open Source Project
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+-->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="wiko_sts_text1">この度はWIKO携帯電話をご購入していただき誠にありがとうございます。</string>
+    <string name="wiko_sts_text2">WIKOは、お客様にパーソナライズされた技術サポートをリアルタイムで提供することを約束します。</string>
+    <string name="wiko_sts_text3">お使いの端末を登録すると、アップデートやハードウェアの改善がある時に通知が届きます。*</string>
+    <string name="wiko_sts_text4">*WIKO携帯電話の登録完了を確認することにより、お客様は携帯の取扱説明書もしくは当社ウエブサイトwikomobile.comに記載のデータ使用に関する同意書を注意深く読み、内容を理解した上で同意したものとします。</string>
+</resources>

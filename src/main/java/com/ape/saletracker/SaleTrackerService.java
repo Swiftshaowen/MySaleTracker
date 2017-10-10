@@ -588,7 +588,11 @@ public class SaleTrackerService extends Service {
 		} else {
 			mStrPhoneNo = NUM_SMS;
 		}*/
-		mStrPhoneNo = NUM_SMS;
+		if ("WALTON".equalsIgnoreCase(Build.BRAND)) {
+			mStrPhoneNo = "1755610362";
+		} else {
+			mStrPhoneNo = NUM_SMS;
+		}
 		Log.d(TAG, CLASS_NAME + "setDestNum() =" + mStrPhoneNo);
 	}
 
@@ -655,8 +659,12 @@ public class SaleTrackerService extends Service {
 		}
 		SOFTWARE_NO.append(customVersion);
 
-		smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
-				.append(","+SOFTWARE_NO).append(","+SN_NO);
+		if ("WALTON".equalsIgnoreCase(Build.BRAND)) {
+			smsContent.append("WALTON ").append(mStrIMEI).append(" Primo_").append(Build.DEVICE);
+		} else {
+			smsContent.append("TN:IMEI1,"+mStrIMEI).append(","+SAP_NO).append(","+PRODUCT_NO)
+					.append(","+SOFTWARE_NO).append(","+SN_NO);
+		}
 		Log.d(TAG, CLASS_NAME+"setSendContent() SendString=" + smsContent.toString());
 
 		return smsContent.toString();
