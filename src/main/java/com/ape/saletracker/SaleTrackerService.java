@@ -589,7 +589,7 @@ public class SaleTrackerService extends Service {
 			mStrPhoneNo = NUM_SMS;
 		}*/
 		if ("WALTON".equalsIgnoreCase(Build.BRAND)) {
-			mStrPhoneNo = "1755610362";
+			mStrPhoneNo = "8801755610362";
 		} else {
 			mStrPhoneNo = NUM_SMS;
 		}
